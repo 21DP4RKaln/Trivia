@@ -1,61 +1,208 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Trivia Game 
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Quick Start
 
-## About Laravel
+### Prerequisites
+- PHP 8.2 or higher
+- Composer
+- Node.js & npm
+- MySQL database
+- Web server (Apache/Nginx) or Laravel's built-in server
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Installation
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/trivia-game.git
+   cd trivia-game
+   ```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
 
-## Learning Laravel
+3. **Install JavaScript dependencies**
+   ```bash
+   npm install
+   ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+4. **Environment Setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+5. **Configure Database**
+   
+   Edit `.env` file with your database credentials:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=trivia
+   DB_USERNAME=root
+   DB_PASSWORD=your_password
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+6. **Run Migrations & Seed Data**
+   ```bash
+   php artisan migrate
+   php artisan db:seed
+   ```
 
-## Laravel Sponsors
+7. **Build Assets**
+   ```bash
+   npm run build
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+8. **Start the Development Server**
+   ```bash
+   php artisan serve
+   ```
 
-### Premium Partners
+Visit `http://localhost:8000` to access the application.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Usage
+
+### Playing the Game
+
+1. **Register/Login**: Create an account or log in to an existing one
+2. **Start Game**: Click "Start New Game" from the dashboard
+3. **Answer Questions**: You'll get 20 multiple-choice questions
+4. **View Results**: See your final score and game statistics
+5. **Dashboard**: Track your progress and view game history
+
+### Admin Functions
+
+1. **Become Admin**
+   ```bash
+   php artisan user:make-admin your-email@example.com
+   ```
+
+2. **Access Admin Panel**: Login and click "Admin Panel" in navigation
+3. **Manage Users**: View all users and grant/revoke admin privileges
+4. **View Statistics**: Analyze game data and user engagement
+5. **Test Games**: Play with correct answers visible for testing
+
+## Technical Details
+
+### Architecture
+- **Framework**: Laravel 12.x
+- **Frontend**: Blade templates with Tailwind CSS
+- **Database**: MySQL with Eloquent ORM
+- **Authentication**: Laravel's built-in authentication system
+- **Asset Building**: Vite for modern asset compilation
+
+### Key Components
+
+#### Models
+- **User**: Handles authentication and admin privileges
+- **GameSession**: Tracks individual game instances and statistics
+- **TriviaService**: Manages question generation and validation
+
+#### Controllers
+- **TriviaController**: Core game logic and question handling
+- **AdminController**: Admin panel functionality
+- **Auth Controllers**: User registration and authentication
+
+#### Middleware
+- **AdminMiddleware**: Protects admin routes and functionality
+
+### Database Schema
+
+```sql
+-- Users table (extended)
+users (
+    id, name, email, password, is_admin, timestamps
+)
+
+-- Game sessions
+game_sessions (
+    id, user_id, score, total_questions, duration, 
+    completed_at, used_questions, gameplay_start_time, timestamps
+)
+```
+
+## Configuration
+
+### Environment Variables
+Key configuration options in `.env`:
+
+```env
+# Application
+APP_NAME="Trivia Game"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+
+# Database
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=trivia
+DB_USERNAME=root
+DB_PASSWORD=
+
+# Session
+SESSION_DRIVER=database
+SESSION_LIFETIME=120
+
+# Cache
+CACHE_STORE=database
+```
+
+### Admin Configuration
+- Admin privileges are stored in the `is_admin` column
+- Use the `user:make-admin` command to grant admin access
+- Admin middleware protects all admin routes
+
+## Troubleshooting
+
+### Common Issues
+
+**Database Connection Error**
+```bash
+# Check database credentials in .env
+# Ensure MySQL is running
+# Verify database exists
+php artisan config:clear
+```
+
+**Asset Build Issues**
+```bash
+# Clear cache and rebuild
+npm run build
+php artisan view:clear
+```
+
+**Permission Issues**
+```bash
+# Set proper permissions
+chmod -R 755 storage bootstrap/cache
+```
+
+**Migration Errors**
+```bash
+# Reset database if needed
+php artisan migrate:fresh --seed
+```
+
+### Performance Optimization
+- Enable caching for production: `CACHE_STORE=redis`
+- Use queue system for background tasks: `QUEUE_CONNECTION=redis`
+- Optimize assets: `npm run build` for production
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Commit your changes: `git commit -am 'Add feature'`
+4. Push to the branch: `git push origin feature-name`
+5. Submit a pull request
 
-## Code of Conduct
+## Enjoy Playing!
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Start your trivia journey today and test your knowledge across various topics. Whether you're a casual player or a trivia enthusiast, this game offers an engaging experience with smart question generation and comprehensive tracking.
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Happy Gaming!**

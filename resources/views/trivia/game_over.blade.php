@@ -8,6 +8,12 @@
     <div class="result-box error">
         <h2>Unfortunately, your answer is incorrect!</h2>
         <p>You answered correctly to <strong>{{ $correct_answers }}</strong> questions.</p>
+        
+        @auth
+            <p><em>This game has been saved to your account history.</em></p>
+        @else
+            <p><em><a href="{{ route('register') }}">Create an account</a> to track your game history and statistics!</em></p>
+        @endauth
     </div>
     
     @if($last_question)
@@ -51,4 +57,10 @@
     <a href="{{ route('trivia.index') }}" class="btn">
         Home
     </a>
+    
+    @auth
+        <a href="{{ route('dashboard') }}" class="btn btn-secondary">
+            View Dashboard
+        </a>
+    @endauth
 @endsection

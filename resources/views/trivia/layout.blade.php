@@ -117,6 +117,60 @@
             background: #c82333;
         }
         
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .auth-status {
+            background: #e8f4fd;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .auth-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .auth-actions .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            min-width: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .auth-status {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .auth-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+        }
+        
         .game-stats {
             background: #e8f4fd;
             border-radius: 10px;
@@ -190,21 +244,25 @@
 </head>
 <body>
     <div class="container">
+        @auth
+            @if(auth()->user()->isAdmin())
+                <div style="text-align: right; margin-bottom: 10px;">
+                    <a href="{{ route('admin.dashboard') }}" style="color: #667eea; text-decoration: none; font-size: 12px; background: #f0f0f0; padding: 5px 10px; border-radius: 5px;">🔧 Admin Panel</a>
+                </div>
+            @endif
+        @endauth
         @yield('content')
     </div>
     
     <script>
-        // Handle option selection
         document.addEventListener('DOMContentLoaded', function() {
             const options = document.querySelectorAll('.option');
             const submitBtn = document.getElementById('submit-btn');
             
             options.forEach(option => {
                 option.addEventListener('click', function() {
-                    // Remove previous selections
                     options.forEach(opt => opt.classList.remove('selected'));
                     
-                    // Select clicked option
                     this.classList.add('selected');
                     const radio = this.querySelector('input[type="radio"]');
                     if (radio) {
