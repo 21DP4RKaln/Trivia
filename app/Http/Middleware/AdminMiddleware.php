@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleware
@@ -20,7 +21,8 @@ class AdminMiddleware
             return redirect()->route('login');
         }
 
-        if (!Auth::user() || !Auth::user()->isAdmin()) {
+        $user = Auth::user();
+        if (!$user || !isset($user->is_admin) || !$user->is_admin) {
             abort(403, 'Access denied. Admin privileges required.');
         }
 

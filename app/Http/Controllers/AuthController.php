@@ -7,6 +7,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
 
@@ -14,7 +16,7 @@ class AuthController
 {
     public function showLoginForm(): View
     {
-        return view('auth.login');
+        return view('auth.auth', ['isLogin' => true]);
     }
 
     public function login(Request $request): RedirectResponse
@@ -26,17 +28,17 @@ class AuthController
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended(route('trivia.index'));
+            return redirect()->intended(route('dashboard'));
         }
 
-        throw ValidationException::withMessages([
-            'email' => ['The provided credentials do not match our records.'],
-        ]);
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->withInput($request->only('email'));
     }
 
     public function showRegisterForm(): View
     {
-        return view('auth.register');
+        return view('auth.auth', ['isLogin' => false]);
     }
 
     public function register(Request $request): RedirectResponse
@@ -45,6 +47,13 @@ class AuthController
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'terms' => 'required|accepted',
+        ], [
+            'name.required' => 'Name is required.',
+            'email.unique' => 'This email address is already registered.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.confirmed' => 'Password confirmation does not match.',
+            'terms.accepted' => 'You must accept the terms of service.',
         ]);
 
         $user = User::create([
@@ -55,7 +64,7 @@ class AuthController
 
         Auth::login($user);
 
-        return redirect()->route('trivia.index');
+        return redirect()->route('dashboard')->with('success', 'Welcome! Your account has been created successfully.');
     }
 
     public function logout(Request $request): RedirectResponse
@@ -69,15 +78,66 @@ class AuthController
     public function dashboard(): View
     {
         $user = Auth::user();
+        
+        // Get user's best session (highest score)
+        $bestSession = $user->getBestSession();
+        
+        // Get user's fastest session
+        $fastestSession = $user->getFastestSession();
+        
+        // Get recent games with pagination (10 per page)
         $recentGames = $user->gameSessions()
             ->where('completed', true)
-            ->orderByDesc('created_at')
-            ->limit(10)
-            ->get();
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        
+        return view('auth.dashboard', compact('user', 'bestSession', 'fastestSession', 'recentGames'));
+    }
 
-        $bestSession = $user->getBestSession();
-        $fastestSession = $user->getFastestSession();
+    public function showForgotPasswordForm(): View
+    {
+        return view('auth.forgot-password');
+    }
 
-        return view('auth.dashboard', compact('user', 'recentGames', 'bestSession', 'fastestSession'));
+    public function sendPasswordResetLink(Request $request): RedirectResponse
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return $status === Password::RESET_LINK_SENT
+                    ? back()->with(['status' => __($status)])
+                    : back()->withErrors(['email' => __($status)]);
+    }
+
+    public function showResetPasswordForm(Request $request, string $token): View
+    {
+        return view('auth.reset-password', ['token' => $token, 'email' => $request->email]);
+    }
+
+    public function resetPassword(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+                    ? redirect()->route('login')->with('status', __($status))
+                    : back()->withErrors(['email' => [__($status)]]);
     }
 }

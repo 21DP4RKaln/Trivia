@@ -5,239 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trivia Game - @yield('title')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @vite(['resources/scss/app.scss', 'resources/js/app.js'])
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .option.selected {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)) !important;
+            color: var(--text-accent) !important;
+            border-color: var(--gradient-start) !important;
+            animation: pulse 0.5s ease-in-out;
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn:disabled {
+            background: rgba(156, 163, 175, 0.3) !important;
+            color: rgba(107, 114, 128, 0.7) !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            opacity: 0.6 !important;
+            backdrop-filter: blur(2px) !important;
         }
         
         .container {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            max-width: 600px;
-            width: 90%;
-            text-align: center;
+            animation: float 6s ease-in-out infinite;
         }
         
-        h1 {
-            color: #333;
-            margin-bottom: 1.5rem;
-            font-size: 2.5rem;
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
         
-        h2 {
-            color: #555;
-            margin-bottom: 1rem;
-        }
-        
-        .question {
-            background: #f8f9ff;
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            font-size: 1.2rem;
-            color: #333;
-            border-left: 5px solid #667eea;
-        }
-        
-        .options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-        
-        .option {
-            background: #f0f0f0;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            padding: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
-        
-        .option:hover {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-            transform: translateY(-2px);
-        }
-        
-        .option input[type="radio"] {
-            display: none;
-        }
-        
-        .option input[type="radio"]:checked + .option-text {
-            background: #667eea;
-            color: white;
-        }
-        
-        .btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 1rem 0.5rem;
-            min-width: 150px;
-        }
-        
-        .btn:hover {
-            background: #5a6fd8;
-            transform: translateY(-2px);
-        }
-        
-        .btn-success {
-            background: #28a745;
-        }
-        
-        .btn-success:hover {
-            background: #218838;
-        }
-        
-        .btn-danger {
-            background: #dc3545;
-        }
-        
-        .btn-danger:hover {
-            background: #c82333;
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-        }
-        
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-        
-        .btn-outline {
-            background: transparent;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-        
-        .btn-outline:hover {
-            background: #667eea;
-            color: white;
-        }
-        
-        .auth-status {
-            background: #e8f4fd;
-            border-radius: 10px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .auth-actions {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-        
-        .auth-actions .btn {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-            min-width: auto;
-        }
-        
-        @media (max-width: 768px) {
-            .auth-status {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-            
-            .auth-actions {
-                flex-direction: column;
-                width: 100%;
-            }
-        }
-        
-        .game-stats {
-            background: #e8f4fd;
-            border-radius: 10px;
-            padding: 1rem;
-            margin: 1rem 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .stat {
-            text-align: center;
-        }
-        
-        .stat-label {
-            font-size: 0.9rem;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .result-box {
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-        }
-        
-        .success {
-            background: #d4edda;
-            border: 2px solid #28a745;
-            color: #155724;
-        }
-        
-        .error {
-            background: #f8d7da;
-            border: 2px solid #dc3545;
-            color: #721c24;
-        }
-        
-        .last-question {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            color: #856404;
-            border-radius: 10px;
-            padding: 1rem;
-            margin: 1rem 0;
-            text-align: left;
-        }
-        
-        @media (max-width: 768px) {
-            .options {
-                grid-template-columns: 1fr;
-            }
-            
-            .game-stats {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            h1 {
-                font-size: 2rem;
+        @media (prefers-color-scheme: dark) {
+            .container {
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), 
+                           0 0 0 1px rgba(255, 255, 255, 0.1);
             }
         }
     </style>
@@ -245,9 +45,9 @@
 <body>
     <div class="container">
         @auth
-            @if(auth()->user()->isAdmin())
-                <div style="text-align: right; margin-bottom: 10px;">
-                    <a href="{{ route('admin.dashboard') }}" style="color: #667eea; text-decoration: none; font-size: 12px; background: #f0f0f0; padding: 5px 10px; border-radius: 5px;">🔧 Admin Panel</a>
+            @if(auth()->user()->is_admin ?? false)
+                <div class="text-right mb-3">
+                    <a href="{{ route('admin.dashboard') }}" class="admin-link">Admin Panel</a>
                 </div>
             @endif
         @endauth
@@ -271,20 +71,43 @@
                     }
                 });
             });
+
+            const timerElement = document.getElementById('timer');
+            const currentPath = window.location.pathname;
+            
+            if (timerElement) {
+                let gameStartTime = localStorage.getItem('gameplayStartTime');
+                
+                if (gameStartTime) {
+                    gameStartTime = parseInt(gameStartTime);
+                    
+                    function updateTimer() {
+                        const now = Date.now();
+                        const elapsed = Math.floor((now - gameStartTime) / 1000);
+                        const minutes = Math.floor(elapsed / 60);
+                        const seconds = elapsed % 60;
+                        const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                        
+                        timerElement.textContent = timeString;
+                    }
+                    
+                    updateTimer();
+                    if (!currentPath.includes('/game-over') && !currentPath.includes('/game-won')) {
+                        window.gameTimerInterval = setInterval(updateTimer, 1000);
+                    }
+                } else {
+                    timerElement.textContent = '0:00';
+                }
+            }
+
+            if (!currentPath.includes('/question') && 
+                !currentPath.includes('/correct') &&
+                !currentPath.includes('/game-over') &&
+                !currentPath.includes('/game-won')) {
+                localStorage.removeItem('gameplayStartTime');
+                localStorage.removeItem('finalGameDuration');
+            }
         });
     </script>
-    
-    <style>
-        .option.selected {
-            background: #667eea !important;
-            color: white !important;
-            border-color: #667eea !important;
-        }
-        
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-    </style>
 </body>
 </html>

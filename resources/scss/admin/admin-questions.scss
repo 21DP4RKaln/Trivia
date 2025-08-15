@@ -1,0 +1,541 @@
+@use 'sass:color';
+@import 'admin-variables';
+
+@mixin smooth-transition($property: all, $duration: 0.3s) {
+  transition: #{$property} #{$duration} cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@mixin hover-lift {
+  @include smooth-transition(transform);
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+$question-card-bg: rgba(255, 255, 255, 0.05);
+$question-card-border: rgba(255, 255, 255, 0.1);
+$question-card-hover: rgba(255, 255, 255, 0.08);
+
+$fallback-color: #8b5cf6;
+$api-color: #10b981;
+$correct-answer-color: #10b981;
+
+.sources-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: $spacing-unit * 1.5;
+  margin-bottom: $spacing-unit * 3;
+
+  .source-card {
+    background: $glass-bg;
+    backdrop-filter: blur(10px);
+    border: 1px solid $glass-border;
+    border-radius: $border-radius-lg;
+    padding: $spacing-unit * 2;
+    @include smooth-transition();
+    @include hover-lift();
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }    &.fallback-source {
+      border-left: 4px solid $fallback-color;
+      
+      .source-icon {
+        background: linear-gradient(135deg, $fallback-color, color.adjust($fallback-color, $lightness: 10%));
+      }
+    }
+
+    &.api-source {
+      border-left: 4px solid $api-color;
+      
+      .source-icon {
+        background: linear-gradient(135deg, $api-color, color.adjust($api-color, $lightness: 10%));
+      }
+    }
+
+    .source-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: $spacing-unit;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    .source-info {
+      h3 {
+        color: $text-primary;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 $spacing-unit * 0.5 0;
+      }
+
+      p {
+        color: $text-secondary;
+        font-size: 0.9rem;
+        margin: 0 0 $spacing-unit 0;
+        line-height: 1.5;
+      }
+
+      .source-stats {
+        .stat {
+          display: inline-flex;
+          align-items: center;
+          background: rgba(255, 255, 255, 0.1);
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.8rem;
+          color: $text-primary;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+.questions-section {
+  margin-bottom: $spacing-unit * 3;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-unit * 2;
+    padding-bottom: $spacing-unit;
+    border-bottom: 1px solid $admin-border;
+
+    .section-title {
+      color: $text-primary;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: $spacing-unit * 0.75;
+
+      i {
+        color: $primary-gradient;
+        background: $primary-gradient;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+    }
+
+    .section-actions {
+      display: flex;
+      gap: $spacing-unit * 0.75;
+    }
+  }
+
+  .questions-grid {
+    display: grid;
+    gap: $spacing-unit * 1.5;
+  }
+}
+
+.question-card {
+  background: $question-card-bg;
+  backdrop-filter: blur(10px);
+  border: 1px solid $question-card-border;
+  border-radius: $border-radius;
+  overflow: hidden;
+  @include smooth-transition();
+
+  &:hover {
+    background: $question-card-hover;
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+  }
+
+  &[data-category="fallback"] {
+    border-left: 3px solid $fallback-color;
+  }
+
+  &[data-category="api"] {
+    border-left: 3px solid $api-color;
+  }
+
+  .question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-unit * 1.5;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid $question-card-border;
+
+    .question-number {
+      display: flex;
+      align-items: center;
+      gap: $spacing-unit;
+
+      .number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: $primary-gradient;
+        color: white;
+        border-radius: 50%;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      .badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        &.fallback-badge {
+          background: rgba($fallback-color, 0.2);
+          color: $fallback-color;
+          border: 1px solid rgba($fallback-color, 0.3);
+        }
+
+        &.api-badge {
+          background: rgba($api-color, 0.2);
+          color: $api-color;
+          border: 1px solid rgba($api-color, 0.3);
+        }
+      }
+    }
+
+    .btn-toggle {
+      background: none;
+      border: none;
+      color: $text-secondary;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50%;
+      @include smooth-transition();
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: $text-primary;
+      }
+
+      i {
+        font-size: 1rem;
+        @include smooth-transition(transform);
+      }
+
+      &.expanded i {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .question-content {
+    padding: $spacing-unit * 1.5;
+
+    .question-text {
+      color: $text-primary;
+      font-size: 1.1rem;
+      font-weight: 500;
+      line-height: 1.6;
+      margin-bottom: $spacing-unit;
+    }
+
+    .question-details {
+      @include smooth-transition(all, 0.3s);
+      
+      &.collapsed {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        margin-top: 0;
+      }
+
+      &:not(.collapsed) {
+        max-height: 1000px;
+        opacity: 1;
+        margin-top: $spacing-unit;
+      }
+    }
+  }
+}
+
+.options-list {
+  display: grid;
+  gap: $spacing-unit * 0.75;
+  margin-bottom: $spacing-unit * 1.5;
+
+  .option-item {
+    display: flex;
+    align-items: center;
+    gap: $spacing-unit;
+    padding: $spacing-unit;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: $border-radius * 0.75;
+    @include smooth-transition();
+
+    &.correct {
+      background: rgba($correct-answer-color, 0.1);
+      border-color: rgba($correct-answer-color, 0.3);
+      box-shadow: 0 0 0 1px rgba($correct-answer-color, 0.2);
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .option-letter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: $text-primary;
+      flex-shrink: 0;
+    }
+
+    .option-text {
+      color: $text-primary;
+      flex: 1;
+      font-size: 0.95rem;
+    }
+
+    .correct-icon {
+      color: $correct-answer-color;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    &.correct .option-letter {
+      background: $correct-answer-color;
+      color: white;
+    }
+  }
+}
+
+.question-fact {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 3px solid #f59e0b;
+  border-radius: $border-radius * 0.75;
+  padding: $spacing-unit * 1.25;
+
+  .fact-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-unit * 0.5;
+    color: #f59e0b;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: $spacing-unit * 0.75;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    i {
+      font-size: 1rem;
+    }
+  }
+
+  .fact-content {
+    color: $text-secondary;
+    line-height: 1.6;
+    font-size: 0.9rem;
+  }
+}
+
+.stats-section {
+  margin-top: $spacing-unit * 4;
+
+  .stats-card {
+    background: $glass-bg;
+    backdrop-filter: blur(10px);
+    border: 1px solid $glass-border;
+    border-radius: $border-radius-lg;
+    overflow: hidden;
+
+    .card-header {
+      background: rgba(255, 255, 255, 0.02);
+      padding: $spacing-unit * 1.5;
+      border-bottom: 1px solid $glass-border;
+
+      .card-title {
+        color: $text-primary;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: $spacing-unit * 0.75;
+
+        i {
+          color: $primary-gradient;
+          background: $primary-gradient;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+      }
+    }
+
+    .card-content {
+      padding: $spacing-unit * 2;
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: $spacing-unit * 2;
+
+        .stat-item {
+          display: flex;
+          align-items: flex-start;
+          gap: $spacing-unit;
+          padding: $spacing-unit * 1.5;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: $border-radius;
+          @include smooth-transition();
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+          }
+
+          .stat-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: $primary-gradient;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+          }
+
+          .stat-details {
+            flex: 1;
+
+            .stat-value {
+              color: $text-primary;
+              font-size: 1.75rem;
+              font-weight: 700;
+              line-height: 1;
+              margin-bottom: $spacing-unit * 0.25;
+            }
+
+            .stat-label {
+              color: $text-primary;
+              font-weight: 600;
+              font-size: 0.9rem;
+              margin-bottom: $spacing-unit * 0.25;
+            }
+
+            .stat-description {
+              color: $text-secondary;
+              font-size: 0.8rem;
+              line-height: 1.4;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .sources-overview {
+    grid-template-columns: 1fr;
+    gap: $spacing-unit;
+  }
+
+  .questions-section {
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: $spacing-unit;
+
+      .section-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+  }
+
+  .question-card {
+    .question-header {
+      padding: $spacing-unit;
+    }
+
+    .question-content {
+      padding: $spacing-unit;
+    }
+  }
+
+  .stats-section {
+    .stats-card {
+      .card-content {
+        .stats-grid {
+          grid-template-columns: 1fr;
+          gap: $spacing-unit;
+        }
+      }
+    }
+  }
+}
+
+@keyframes expandContent {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 1000px;
+    opacity: 1;
+  }
+}
+
+@keyframes collapseContent {
+  from {
+    max-height: 1000px;
+    opacity: 1;
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+
+.questions-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-unit * 4;
+  color: $text-secondary;
+  
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top: 3px solid $primary-gradient;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: $spacing-unit;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

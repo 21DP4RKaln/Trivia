@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Services\TriviaService;
 use App\Models\GameSession;
+use App\Models\User;
 use Carbon\Carbon;
 
 class TriviaController extends Controller
@@ -86,6 +87,12 @@ class TriviaController extends Controller
         $gameState['current_question_data'] = $questionData;
         $request->session()->put('trivia', $gameState);
         
+        $isAdmin = false;
+        if (Auth::check()) {
+            $user = Auth::user();
+            $isAdmin = $user && isset($user->is_admin) && $user->is_admin;
+        }
+
         return view('trivia.question', [
             'question' => $questionData['question'],
             'options' => $questionData['options'],
@@ -93,7 +100,8 @@ class TriviaController extends Controller
             'correct_answers' => $gameState['correct_answers'],
             'correct_answer' => $questionData['correct_answer'], 
             'full_fact' => $questionData['full_fact'] ?? null, 
-            'is_admin' => Auth::check() && Auth::user() && Auth::user()->isAdmin()
+            'is_admin' => $isAdmin,
+            'gameplay_start_time' => $gameState['gameplay_start_time'] ?? null
         ]);
     }
     
@@ -134,7 +142,8 @@ class TriviaController extends Controller
             
             return view('trivia.correct', [
                 'correct_answers' => $gameState['correct_answers'],
-                'current_question' => $gameState['current_question']
+                'current_question' => $gameState['current_question'],
+                'gameplay_start_time' => $gameState['gameplay_start_time'] ?? null
             ]);
             
         } else {
@@ -190,22 +199,66 @@ class TriviaController extends Controller
             return;
         }
         
-        $endTime = Carbon::now();
-        
-        $startTime = isset($gameState['gameplay_start_time']) 
-            ? Carbon::parse($gameState['gameplay_start_time'])
-            : Carbon::parse($gameState['start_time']);
-            
-        $durationSeconds = $endTime->diffInSeconds($startTime);
-        
-        $durationSeconds = max(1, $durationSeconds);
-        
         $gameSession->update([
             'total_questions' => 20, 
             'correct_answers' => $gameState['correct_answers'],
-            'end_time' => $endTime,
-            'duration_seconds' => $durationSeconds,
+            'duration_seconds' => 0, 
             'completed' => true
+        ]);
+    }
+    
+    /**
+     * Update game session duration from client-side timer
+     */
+    public function updateDuration(Request $request)
+    {
+        $request->validate([
+            'duration' => 'required|integer|min:0',
+            'question_times' => 'sometimes|array'
+        ]);
+
+        if (!Auth::check()) {
+            return response()->json(['success' => false, 'message' => 'Not authenticated']);
+        }
+
+        $gameState = $request->session()->get('trivia');
+        if (!$gameState || !isset($gameState['game_session_id'])) {
+            return response()->json(['success' => false, 'message' => 'No active game session']);
+        }
+
+        $gameSession = GameSession::find($gameState['game_session_id']);
+        if (!$gameSession) {
+            return response()->json(['success' => false, 'message' => 'Game session not found']);
+        }
+
+        $duration = $request->input('duration');
+        $questionTimes = $request->input('question_times', []);
+        
+        // Log for debugging
+        \Log::info('Updating game duration', [
+            'game_session_id' => $gameSession->id,
+            'old_duration' => $gameSession->duration_seconds,
+            'new_duration' => $duration,
+            'question_times_count' => count($questionTimes)
+        ]);
+
+        // Update the duration with the client-side calculated value
+        $updated = $gameSession->update([
+            'duration_seconds' => $duration,
+            'question_times' => $questionTimes,
+            'end_time' => Carbon::now()
+        ]);
+
+        \Log::info('Duration update result', [
+            'success' => $updated,
+            'final_duration' => $gameSession->fresh()->duration_seconds
+        ]);
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Duration updated',
+            'duration' => $duration,
+            'formatted' => $gameSession->fresh()->duration
         ]);
     }
 }

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password - Number Trivia Game</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @vite(['resources/scss/app.scss', 'resources/js/app.js'])
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .reset-password-page {
+            min-height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+        }
+
+        .reset-password-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('/image/logo.png') center/cover no-repeat;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .reset-password-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            width: 500px;
+            max-width: 95%;
+            min-height: 550px;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reset-password-form {
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 60px 40px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .reset-password-title {
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin: 0 0 20px 0;
+            color: #333;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .reset-password-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            outline: none;
+        }
+
+        .auth-input:focus {
+            border-color: var(--gradient-start);
+            background: #ffffff;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: var(--gradient-start);
+        }
+
+        .auth-button {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 15px 45px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .auth-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .auth-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-link {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .back-link:hover {
+            color: var(--gradient-start);
+        }
+
+        .back-button {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 12px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border-left: 4px solid #dc2626;
+            width: 100%;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 12px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border-left: 4px solid #10b981;
+            width: 100%;
+        }
+
+        .icon-container {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px auto;
+            color: white;
+            font-size: 32px;
+        }
+
+        .password-strength {
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .strength-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .strength-segment {
+            height: 4px;
+            flex: 1;
+            border-radius: 2px;
+            background: #e1e5e9;
+            transition: all 0.3s ease;
+        }
+
+        .strength-text {
+            font-size: 12px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .reset-password-container {
+                width: 100%;
+                min-height: 100vh;
+                border-radius: 0;
+            }
+
+            .reset-password-form {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="reset-password-page">
+        <!-- Back Button -->
+        <a href="{{ route('login') }}" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+
+        <div class="reset-password-container">
+            <form class="reset-password-form" method="POST" action="{{ route('password.update') }}">
+                @csrf
+                
+                <input type="hidden" name="token" value="{{ $token }}">
+                
+                <div class="icon-container">
+                    <i class="fas fa-key"></i>
+                </div>
+                
+                <h1 class="reset-password-title">Reset Password</h1>
+                
+                <p class="reset-password-subtitle">
+                    Enter your new password below. Make sure it's strong and secure.
+                </p>
+
+                @if($errors->any())
+                    <div class="error-message">
+                        @foreach($errors->all() as $error)
+                            <div>{{ $error }}</div>
+                        @endforeach
+                    </div>
+                @endif
+
+                @if(session('status'))
+                    <div class="success-message">
+                        {{ session('status') }}
+                    </div>
+                @endif
+                
+                <input 
+                    type="email" 
+                    class="auth-input" 
+                    name="email" 
+                    placeholder="Email Address" 
+                    value="{{ $email ?? old('email') }}" 
+                    required
+                    autocomplete="email"
+                    readonly
+                >
+                
+                <div class="input-wrapper">
+                    <input 
+                        type="password" 
+                        class="auth-input" 
+                        name="password" 
+                        id="password"
+                        placeholder="New Password" 
+                        required
+                        autocomplete="new-password"
+                    >
+                    <button type="button" class="password-toggle" onclick="togglePassword('password', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+
+                <div class="password-strength" id="password-strength" style="display: none;">
+                    <div class="strength-bar">
+                        <div class="strength-segment" id="strength-1"></div>
+                        <div class="strength-segment" id="strength-2"></div>
+                        <div class="strength-segment" id="strength-3"></div>
+                        <div class="strength-segment" id="strength-4"></div>
+                    </div>
+                    <div class="strength-text" id="strength-text">Password strength</div>
+                </div>
+                
+                <div class="input-wrapper">
+                    <input 
+                        type="password" 
+                        class="auth-input" 
+                        name="password_confirmation" 
+                        id="password_confirmation"
+                        placeholder="Confirm New Password" 
+                        required
+                        autocomplete="new-password"
+                    >
+                    <button type="button" class="password-toggle" onclick="togglePassword('password_confirmation', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                
+                <button type="submit" class="auth-button">
+                    Reset Password
+                </button>
+                
+                <a href="{{ route('login') }}" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Login
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function checkPasswordStrength(password) {
+            const strengthIndicator = document.getElementById('password-strength');
+            const strengthText = document.getElementById('strength-text');
+            
+            if (password.length === 0) {
+                strengthIndicator.style.display = 'none';
+                return;
+            }
+            
+            strengthIndicator.style.display = 'block';
+            
+            let score = 0;
+            let feedback = '';
+            
+            // Length check
+            if (password.length >= 8) score++;
+            if (password.length >= 12) score++;
+            
+            // Character type checks
+            if (/[a-z]/.test(password)) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+            
+            // Normalize score to 4 segments
+            const normalizedScore = Math.min(4, Math.floor(score * 4 / 6));
+            
+            // Update visual indicators
+            for (let i = 1; i <= 4; i++) {
+                const segment = document.getElementById(`strength-${i}`);
+                segment.style.background = i <= normalizedScore ? getStrengthColor(normalizedScore) : '#e1e5e9';
+            }
+            
+            // Update text
+            const strengthTexts = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+            strengthText.textContent = strengthTexts[normalizedScore] || 'Very Weak';
+            strengthText.style.color = getStrengthColor(normalizedScore);
+        }
+        
+        function getStrengthColor(score) {
+            const colors = ['#dc2626', '#f59e0b', '#10b981', '#059669'];
+            return colors[Math.max(0, score - 1)] || '#dc2626';
+        }
+
+        // Add form validation and password strength checking
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const passwordInput = document.getElementById('password');
+            
+            passwordInput.addEventListener('input', function() {
+                checkPasswordStrength(this.value);
+            });
+            
+            form.addEventListener('submit', function(e) {
+                const button = this.querySelector('.auth-button');
+                button.disabled = true;
+                button.innerHTML = 'Resetting...';
+            });
+        });
+    </script>
+</body>
+</html>

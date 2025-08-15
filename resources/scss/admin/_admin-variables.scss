@@ -1,0 +1,72 @@
+$admin-bg: #0a0a0a;
+$admin-surface: #1a1a1a;
+$admin-surface-hover: #252525;
+$admin-surface-alt: #2a2a2a;
+$admin-border: #333333;
+$admin-border-light: #444444;
+
+$text-primary: #ffffff;
+$text-secondary: #b0b0b0;
+$text-muted: #808080;
+$text-accent: #ffffff;
+
+$primary-gradient: linear-gradient(135deg, #10b981, #8b5cf6);
+$success-gradient: linear-gradient(135deg, #10b981, #059669);
+$danger-gradient: linear-gradient(135deg, #ef4444, #dc2626);
+$warning-gradient: linear-gradient(135deg, #f59e0b, #d97706);
+$info-gradient: linear-gradient(135deg, #3b82f6, #2563eb);
+
+$glass-bg: rgba(255, 255, 255, 0.05);
+$glass-bg-enhanced: rgba(255, 255, 255, 0.12);
+$glass-border: rgba(255, 255, 255, 0.1);
+$glass-border-enhanced: rgba(255, 255, 255, 0.15);
+$glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+$glass-shadow-enhanced: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+
+$border-radius: 12px;
+$border-radius-lg: 16px;
+$border-radius-xl: 20px;
+$spacing-unit: 1rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-2xl: 2.5rem;
+
+$emerald-500: #10b981;
+$emerald-600: #059669;
+$emerald-400: #34d399;
+$emerald-300: #6ee7b7;
+
+$blue-500: #3b82f6;
+$blue-600: #2563eb;
+$blue-400: #60a5fa;
+$blue-300: #93c5fd;
+
+$purple-500: #8b5cf6;
+$purple-600: #7c3aed;
+
+$yellow-500: #eab308;
+$yellow-400: #facc15;
+$yellow-300: #fde047;
+
+$red-500: #ef4444;
+$red-600: #dc2626;
+$red-400: #f87171;
+
+$orange-500: #f59e0b;
+$orange-400: #fbbf24;
+
+$transition-fast: 0.2s;
+$transition-normal: 0.3s;
+$transition-slow: 0.4s;
+$easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+$easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+$z-dropdown: 1000;
+$z-sticky: 1020;
+$z-fixed: 1030;
+$z-modal-backdrop: 1040;
+$z-modal: 1050;
+$z-popover: 1060;
+$z-tooltip: 1070;
