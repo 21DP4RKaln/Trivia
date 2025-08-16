@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Models\TermsOfService;
 use Illuminate\Validation\ValidationException;
 
 class AuthController
@@ -139,5 +140,11 @@ class AuthController
         return $status === Password::PASSWORD_RESET
                     ? redirect()->route('login')->with('status', __($status))
                     : back()->withErrors(['email' => [__($status)]]);
+    }
+
+    public function showTermsOfService(): View
+    {
+        $termsData = TermsOfService::getCurrentContent();
+        return view('auth.terms-of-service', compact('termsData'));
     }
 }

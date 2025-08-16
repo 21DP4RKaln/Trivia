@@ -189,6 +189,17 @@
                     <i class="fas fa-chevron-right action-arrow"></i>
                 </a>
 
+                <a href="{{ route('admin.terms-of-service') }}" class="action-item">
+                    <div class="action-icon terms-action">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <div class="action-text">
+                        <div class="action-title">Terms of Service</div>
+                        <div class="action-description">Manage legal terms and policies</div>
+                    </div>
+                    <i class="fas fa-chevron-right action-arrow"></i>
+                </a>
+
                 <a href="{{ route('trivia.index') }}" class="action-item">
                     <div class="action-icon play-action">
                         <i class="fas fa-play"></i>

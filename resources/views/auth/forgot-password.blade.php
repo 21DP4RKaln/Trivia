@@ -5,10 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Forgot Password - Number Trivia Game</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/scss/app.scss', 'resources/css/auth/forgot-password.css', 'resources/js/app.js'])
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="global-page auth-page">
+    <!-- Global Background -->
+    <div class="global-background"></div>
+    
+    <!-- Global Particles -->
+    <div class="global-particles">
+        <div class="global-particle" style="left: 14%; animation-delay: 1s;"></div>
+        <div class="global-particle" style="left: 26%; animation-delay: 3s;"></div>
+        <div class="global-particle" style="left: 38%; animation-delay: 5s;"></div>
+        <div class="global-particle" style="left: 50%; animation-delay: 7s;"></div>
+        <div class="global-particle" style="left: 62%; animation-delay: 9s;"></div>
+        <div class="global-particle" style="left: 74%; animation-delay: 11s;"></div>
+        <div class="global-particle" style="left: 86%; animation-delay: 13s;"></div>
+    </div>
+    
     <div class="forgot-password-page">
         <a href="{{ route('login') }}" class="back-button">
             <i class="fas fa-arrow-left"></i>

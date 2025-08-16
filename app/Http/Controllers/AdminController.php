@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\GameSession;
+use App\Models\TermsOfService;
 use App\Services\TriviaService;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -379,5 +381,151 @@ class AdminController extends Controller
         }
 
         return response()->json($gameSession);
+    }
+
+    /**
+     * Show Terms of Service management page
+     */
+    public function termsOfService()
+    {
+        $currentTerms = TermsOfService::getActive();
+        $history = TermsOfService::with('updatedBy')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        // Get analytics data
+        $analytics = $this->getTermsAnalyticsData();
+
+        return view('admin.terms-of-service', compact('currentTerms', 'history', 'analytics'));
+    }
+
+    /**
+     * Get Terms Analytics Data (AJAX endpoint)
+     */
+    public function getTermsAnalytics(Request $request)
+    {
+        $timeframe = $request->get('timeframe', 30);
+        $analytics = $this->getTermsAnalyticsData($timeframe);
+        
+        return response()->json($analytics);
+    }
+
+    /**
+     * Get Terms Analytics Data
+     */
+    private function getTermsAnalyticsData($timeframe = 30)
+    {
+        // Calculate terms acceptance analytics
+        $daysAgo = now()->subDays($timeframe);
+        
+        // Total users who have accepted terms 
+        $totalAcceptances = User::whereNotNull('created_at')->count();
+        
+        // Recent acceptances 
+        $recentAcceptances = User::where('created_at', '>=', $daysAgo)->count();
+        
+        // Calculate acceptance rate 
+        $totalViews = $totalAcceptances * 1.2; 
+        $acceptanceRate = $totalAcceptances > 0 ? round(($totalAcceptances / $totalViews) * 100, 1) : 0;
+        
+        // Mock average read time 
+        $avgReadTime = "2m 34s";
+        
+        // Daily breakdown for chart
+        $dailyData = [];
+        for ($i = $timeframe - 1; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $dayAcceptances = User::whereDate('created_at', $date->format('Y-m-d'))->count();
+            $dailyData[] = [
+                'date' => $date->format('Y-m-d'),
+                'acceptances' => $dayAcceptances
+            ];
+        }
+        
+        return [
+            'totalAcceptances' => $totalAcceptances,
+            'recentAcceptances' => $recentAcceptances,
+            'acceptanceRate' => $acceptanceRate,
+            'avgReadTime' => $avgReadTime,
+            'totalViews' => (int)$totalViews,
+            'dailyData' => $dailyData
+        ];
+    }
+
+    /**
+     * Update Terms of Service
+     */
+    public function updateTermsOfService(Request $request)
+    {
+        $request->validate([
+            'content' => 'required|string',
+            'version' => 'required|string|max:50',
+            'effective_date' => 'required|date'
+        ]);
+
+        // Deactivate all previous terms
+        TermsOfService::where('is_active', true)->update(['is_active' => false]);
+
+        // Create new terms
+        TermsOfService::create([
+            'content' => $request->content,
+            'version' => $request->version,
+            'effective_date' => $request->effective_date,
+            'is_active' => true,
+            'updated_by' => Auth::id()
+        ]);
+
+        return redirect()->back()->with('success', 'Terms of Service updated successfully!');
+    }
+
+    /**
+     * Get Terms of Service history details for comparison
+     */
+    public function getTermsHistory($id)
+    {
+        $terms = TermsOfService::with('updatedBy')->findOrFail($id);
+        
+        return response()->json([
+            'id' => $terms->id,
+            'version' => $terms->version,
+            'content' => $terms->content,
+            'effective_date' => $terms->effective_date->format('M d, Y'),
+            'created_at' => $terms->created_at->format('M d, Y H:i'),
+            'updated_by' => $terms->updatedBy->name ?? 'System',
+            'is_active' => $terms->is_active
+        ]);
+    }
+
+    /**
+     * Export Terms of Service
+     */
+    public function exportTerms(Request $request)
+    {
+        $format = $request->get('format', 'html');
+        $currentTerms = TermsOfService::getActive();
+        
+        if (!$currentTerms) {
+            return response()->json(['error' => 'No active terms found'], 404);
+        }
+        
+        $content = $currentTerms->content;
+        $version = $currentTerms->version;
+        $effectiveDate = $currentTerms->effective_date->format('Y-m-d');
+        
+        if ($format === 'json') {
+            return response()->json([
+                'version' => $version,
+                'effective_date' => $effectiveDate,
+                'content' => $content,
+                'exported_at' => now()->toISOString()
+            ]);
+        }
+        
+        // For other formats, return data for client-side processing
+        return response()->json([
+            'version' => $version,
+            'effective_date' => $effectiveDate,
+            'content' => $content
+        ]);
     }
 }

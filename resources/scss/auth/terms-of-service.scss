@@ -1,0 +1,439 @@
+// Terms of Service SCSS Variables and Mixins
+$primary-bg: #161616;
+$secondary-bg: rgba(30, 30, 30, 0.95);
+$accent-purple: #8b5cf6;
+$accent-blue: #3b82f6;
+$accent-indigo: #667eea;
+$text-primary: #f9fafb;
+$text-secondary: #d1d5db;
+$text-muted: #9ca3af;
+
+// Mixins
+@mixin glassmorphism($opacity: 0.95) {
+  background: rgba(30, 30, 30, $opacity);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@mixin gradient-text($colors...) {
+  background: linear-gradient(135deg, $colors);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@mixin card-hover-effect() {
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 20px 40px -10px rgba($accent-purple, 0.3),
+      0 0 0 1px rgba($accent-purple, 0.3);
+  }
+}
+
+// Base styles
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  background: $primary-bg;
+  min-height: 100vh;
+  padding: 1rem;
+  position: relative;
+  overflow-x: hidden;
+  color: $text-primary;
+}
+
+// Container
+.terms-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 3.5rem;
+  @include glassmorphism();
+  border-radius: 28px;
+  box-shadow:
+    0 30px 60px -12px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba($accent-purple, 0.2);
+  line-height: 1.8;
+  position: relative;
+  z-index: 3;
+}
+
+// Header
+.terms-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 6px;
+    background: linear-gradient(90deg, $accent-indigo, #764ba2, $accent-purple);
+    border-radius: 3px;
+    box-shadow: 0 0 20px rgba($accent-purple, 0.5);
+  }
+}
+
+.terms-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  @include gradient-text(
+    $accent-indigo,
+    #764ba2,
+    $accent-purple,
+    $accent-blue,
+    $accent-indigo
+  );
+  background-size: 200% 200%;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.03em;
+  animation: gradientFlow 4s ease-in-out infinite;
+}
+
+@keyframes gradientFlow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.terms-subtitle {
+  color: $text-muted;
+  font-size: 1.2rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+// Sections
+.section {
+  margin-bottom: 3.5rem;
+  opacity: 0;
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -2rem;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba($accent-purple, 0.3),
+      transparent
+    );
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+
+  &:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+  &:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  &:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  &:nth-child(4) {
+    animation-delay: 0.4s;
+  }
+  &:nth-child(5) {
+    animation-delay: 0.5s;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-title {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: $text-primary;
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-left: 2.5rem;
+  transition: all 0.4s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    background: linear-gradient(
+      135deg,
+      $accent-purple,
+      $accent-blue,
+      $accent-indigo
+    );
+    border-radius: 4px;
+    transition: all 0.4s ease;
+    box-shadow: 0 0 15px rgba($accent-purple, 0.3);
+  }
+}
+
+.section:hover .section-title {
+  &::before {
+    width: 12px;
+    box-shadow: 0 0 25px rgba($accent-purple, 0.6);
+    background: linear-gradient(135deg, #a855f7, #6366f1, $accent-purple);
+  }
+
+  transform: translateX(5px);
+}
+
+.section-content {
+  color: $text-secondary;
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+
+  p {
+    margin-bottom: 1.2rem;
+  }
+}
+
+// Subsections
+.subsection {
+  margin-bottom: 2.5rem;
+  padding: 2rem;
+  background: linear-gradient(
+    135deg,
+    rgba(40, 40, 40, 0.8),
+    rgba(30, 30, 50, 0.6)
+  );
+  border-radius: 20px;
+  border: 1px solid rgba($accent-purple, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba($accent-purple, 0.5),
+      transparent
+    );
+  }
+
+  @include card-hover-effect();
+
+  &:hover {
+    background: linear-gradient(
+      135deg,
+      rgba($accent-purple, 0.15),
+      rgba($accent-blue, 0.1)
+    );
+    border-color: rgba($accent-purple, 0.4);
+  }
+}
+
+.subsection-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  &::before {
+    content: '▶';
+    color: $accent-purple;
+    margin-right: 0.75rem;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 10px rgba($accent-purple, 0.5);
+  }
+}
+
+.subsection:hover .subsection-title::before {
+  color: #a855f7;
+  transform: scale(1.2);
+  text-shadow: 0 0 15px rgba($accent-purple, 0.8);
+}
+
+// Lists
+.list {
+  padding-left: 2.5rem;
+  margin: 2rem 0;
+
+  li {
+    margin-bottom: 1rem;
+    color: $text-secondary;
+    position: relative;
+    padding-left: 0.75rem;
+    transition: all 0.4s ease;
+    line-height: 1.6;
+    font-size: 1.05rem;
+
+    &::marker {
+      color: $accent-purple;
+      font-weight: bold;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: -1.5rem;
+      top: 0.7rem;
+      width: 6px;
+      height: 6px;
+      background: linear-gradient(135deg, $accent-purple, $accent-blue);
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba($accent-purple, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    &:hover {
+      color: $text-primary;
+      transform: translateX(8px);
+      text-shadow: 0 0 10px rgba($accent-purple, 0.3);
+
+      &::before {
+        background: linear-gradient(135deg, #a855f7, #6366f1);
+        box-shadow: 0 0 15px rgba($accent-purple, 0.6);
+        transform: scale(1.3);
+      }
+    }
+  }
+}
+
+// Buttons
+.back-button {
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(
+    135deg,
+    rgba(40, 40, 40, 0.98),
+    rgba(30, 30, 50, 0.95)
+  );
+  backdrop-filter: blur(25px);
+  border: none;
+  border-radius: 20px;
+  color: #e5e7eb;
+  text-decoration: none;
+  box-shadow:
+    0 15px 35px -5px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba($accent-purple, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+  font-size: 1.3rem;
+  border: 1px solid rgba($accent-purple, 0.2);
+
+  &:hover {
+    background: linear-gradient(
+      135deg,
+      rgba($accent-purple, 0.8),
+      rgba($accent-blue, 0.8)
+    );
+    color: #ffffff;
+    transform: translateY(-3px) scale(1.08);
+    box-shadow:
+      0 25px 50px -5px rgba($accent-purple, 0.4),
+      0 0 0 1px rgba($accent-purple, 0.5),
+      0 0 30px rgba($accent-purple, 0.3);
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .terms-container {
+    margin: 1rem;
+    padding: 2.5rem;
+    border-radius: 20px;
+  }
+
+  .terms-title {
+    font-size: 2.8rem;
+  }
+
+  .back-button {
+    top: 1rem;
+    left: 1rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+    padding-left: 2rem;
+  }
+
+  .subsection {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .terms-title {
+    font-size: 2.2rem;
+  }
+
+  .terms-container {
+    padding: 2rem;
+    margin: 0.5rem;
+  }
+
+  .section-title {
+    font-size: 1.4rem;
+  }
+
+  .back-button {
+    width: 48px;
+    height: 48px;
+    font-size: 1.1rem;
+  }
+}

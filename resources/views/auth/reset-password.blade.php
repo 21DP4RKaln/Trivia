@@ -6,8 +6,7 @@
     <title>Reset Password - Number Trivia Game</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .reset-password-page {
             min-height: 100vh;
@@ -251,10 +250,23 @@
             .reset-password-form {
                 padding: 30px 20px;
             }
-        }
-    </style>
+        }    </style>
 </head>
-<body>
+<body class="global-page auth-page">
+    <!-- Global Background -->
+    <div class="global-background"></div>
+    
+    <!-- Global Particles -->
+    <div class="global-particles">
+        <div class="global-particle" style="left: 16%; animation-delay: 0.8s;"></div>
+        <div class="global-particle" style="left: 28%; animation-delay: 2.8s;"></div>
+        <div class="global-particle" style="left: 40%; animation-delay: 4.8s;"></div>
+        <div class="global-particle" style="left: 52%; animation-delay: 6.8s;"></div>
+        <div class="global-particle" style="left: 64%; animation-delay: 8.8s;"></div>
+        <div class="global-particle" style="left: 76%; animation-delay: 10.8s;"></div>
+        <div class="global-particle" style="left: 88%; animation-delay: 12.8s;"></div>
+    </div>
+    
     <div class="reset-password-page">
         <!-- Back Button -->
         <a href="{{ route('login') }}" class="back-button">

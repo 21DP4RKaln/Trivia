@@ -7,7 +7,7 @@
   --text-primary: #ffffff;
   --text-secondary: #b0b0b0;
   --text-muted: #808080;
-  
+
   --emerald-500: #10b981;
   --emerald-400: #34d399;
   --emerald-300: #6ee7b7;
@@ -15,18 +15,18 @@
   --blue-400: #60a5fa;
   --blue-300: #93c5fd;
   --purple-500: #8b5cf6;
-  
+
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-bg-enhanced: rgba(255, 255, 255, 0.12);
   --glass-border: rgba(255, 255, 255, 0.1);
   --glass-border-enhanced: rgba(255, 255, 255, 0.15);
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   --glass-shadow-enhanced: 0 8px 32px rgba(0, 0, 0, 0.2);
-  
+
   --border-radius: 12px;
   --border-radius-lg: 16px;
   --border-radius-xl: 20px;
-  
+
   --transition-fast: 0.2s;
   --transition-normal: 0.3s;
   --transition-slow: 0.4s;
@@ -34,23 +34,43 @@
 }
 
 @keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 @keyframes distributionShimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 @keyframes distributionGlow {
-  0%, 100% { transform: translateX(-100%); }
-  50% { transform: translateX(100%); }
+  0%,
+  100% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
 }
 
 @keyframes accuracyShimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 @keyframes slideInUp {
@@ -174,7 +194,11 @@
 }
 
 .stat-card {
-  background: linear-gradient(135deg, var(--glass-bg-enhanced), rgba(255, 255, 255, 0.06));
+  background: linear-gradient(
+    135deg,
+    var(--glass-bg-enhanced),
+    rgba(255, 255, 255, 0.06)
+  );
   backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border-enhanced);
   border-radius: var(--border-radius-xl);
@@ -192,7 +216,12 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--emerald-500), var(--blue-500), var(--purple-500));
+  background: linear-gradient(
+    90deg,
+    var(--emerald-500),
+    var(--blue-500),
+    var(--purple-500)
+  );
   background-size: 200% 100%;
   animation: gradientShift 3s ease-in-out infinite;
   border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
@@ -205,7 +234,11 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(16, 185, 129, 0.1) 0%,
+    transparent 70%
+  );
   opacity: 0;
   transition: opacity var(--transition-slow) ease;
   pointer-events: none;
@@ -215,7 +248,11 @@
   transform: translateY(-12px) scale(1.02);
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
   border-color: rgba(255, 255, 255, 0.25);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08));
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0.08)
+  );
 }
 
 .stat-card:hover::after {
@@ -225,7 +262,11 @@
 .stat-icon {
   width: 70px;
   height: 70px;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(59, 130, 246, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.2),
+    rgba(59, 130, 246, 0.2)
+  );
   border-radius: var(--border-radius-lg);
   display: flex;
   align-items: center;
@@ -243,7 +284,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
   transform: translateX(-100%);
   transition: transform 0.6s ease;
 }
@@ -297,7 +343,11 @@
 }
 
 .dashboard-card {
-  background: linear-gradient(135deg, var(--glass-bg-enhanced), rgba(255, 255, 255, 0.06));
+  background: linear-gradient(
+    135deg,
+    var(--glass-bg-enhanced),
+    rgba(255, 255, 255, 0.06)
+  );
   backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border-enhanced);
   border-radius: var(--border-radius-xl);
@@ -363,7 +413,11 @@
 }
 
 .games-table thead th {
-  background: linear-gradient(135deg, var(--admin-surface), var(--admin-surface-hover));
+  background: linear-gradient(
+    135deg,
+    var(--admin-surface),
+    var(--admin-surface-hover)
+  );
   color: var(--text-primary);
   padding: 1.25rem 1.5rem;
   text-align: left;
@@ -465,7 +519,11 @@
 }
 
 .filters-panel {
-  background: linear-gradient(135deg, var(--admin-surface), var(--admin-surface-hover));
+  background: linear-gradient(
+    135deg,
+    var(--admin-surface),
+    var(--admin-surface-hover)
+  );
   border: 1px solid var(--glass-border);
   border-radius: var(--border-radius);
   margin: 1.5rem 2.5rem;
@@ -616,8 +674,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .live-text {
@@ -634,7 +697,11 @@
 }
 
 .metric-card {
-  background: linear-gradient(135deg, var(--glass-bg-enhanced), rgba(255, 255, 255, 0.06));
+  background: linear-gradient(
+    135deg,
+    var(--glass-bg-enhanced),
+    rgba(255, 255, 255, 0.06)
+  );
   backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border-enhanced);
   border-radius: var(--border-radius-xl);
@@ -655,7 +722,11 @@
 }
 
 .metric-card.completion-metric .metric-icon {
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(251, 191, 36, 0.2),
+    rgba(245, 158, 11, 0.2)
+  );
 }
 
 .metric-card.completion-metric .metric-icon i {
@@ -665,7 +736,11 @@
 }
 
 .metric-card.accuracy-metric .metric-icon {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.2),
+    rgba(5, 150, 105, 0.2)
+  );
 }
 
 .metric-card.accuracy-metric .metric-icon i {
@@ -675,7 +750,11 @@
 }
 
 .metric-card.duration-metric .metric-icon {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.2),
+    rgba(37, 99, 235, 0.2)
+  );
 }
 
 .metric-card.duration-metric .metric-icon i {
@@ -685,7 +764,11 @@
 }
 
 .metric-card.perfect-metric .metric-icon {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(124, 58, 237, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.2),
+    rgba(124, 58, 237, 0.2)
+  );
 }
 
 .metric-card.perfect-metric .metric-icon i {
@@ -741,7 +824,11 @@
 }
 
 .analytics-card {
-  background: linear-gradient(135deg, var(--glass-bg-enhanced), rgba(255, 255, 255, 0.06));
+  background: linear-gradient(
+    135deg,
+    var(--glass-bg-enhanced),
+    rgba(255, 255, 255, 0.06)
+  );
   backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border-enhanced);
   border-radius: var(--border-radius-xl);
@@ -819,27 +906,47 @@
 }
 
 .distribution-item.excellent .distribution-icon {
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(251, 191, 36, 0.2),
+    rgba(245, 158, 11, 0.2)
+  );
   color: #fbbf24;
 }
 
 .distribution-item.good .distribution-icon {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.2),
+    rgba(5, 150, 105, 0.2)
+  );
   color: var(--emerald-500);
 }
 
 .distribution-item.average .distribution-icon {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.2),
+    rgba(37, 99, 235, 0.2)
+  );
   color: var(--blue-500);
 }
 
 .distribution-item.below-average .distribution-icon {
-  background: linear-gradient(135deg, rgba(251, 146, 60, 0.2), rgba(249, 115, 22, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(251, 146, 60, 0.2),
+    rgba(249, 115, 22, 0.2)
+  );
   color: #fb923c;
 }
 
 .distribution-item.poor .distribution-icon {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.2),
+    rgba(220, 38, 38, 0.2)
+  );
   color: #ef4444;
 }
 
@@ -1452,7 +1559,11 @@
 }
 
 .modal-content {
-  background: linear-gradient(135deg, var(--admin-surface), var(--admin-surface-hover));
+  background: linear-gradient(
+    135deg,
+    var(--admin-surface),
+    var(--admin-surface-hover)
+  );
   border: 1px solid var(--glass-border-enhanced);
   border-radius: var(--border-radius-xl);
   max-width: 600px;
@@ -1523,8 +1634,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .pagination-wrapper {
@@ -1564,7 +1679,7 @@
   .analytics-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .controls-form {
     grid-template-columns: 1fr;
     gap: 1rem;
@@ -1575,45 +1690,45 @@
   .statistics-container {
     padding: 1rem;
   }
-  
+
   .metrics-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .metric-card {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .metric-card .metric-icon {
     align-self: center;
   }
-  
+
   .header-left {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .activity-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .activity-time {
     margin-left: 0;
   }
-  
+
   .performance-stats {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .table-wrapper {
     font-size: 0.875rem;
   }
-  
+
   .games-table thead th,
   .games-table tbody td {
     padding: 0.75rem 1rem;
@@ -1624,16 +1739,16 @@
   .metric-value {
     font-size: 2rem;
   }
-  
+
   .page-title {
     font-size: 2rem;
   }
-  
+
   .modal-content {
     width: 95%;
     margin: 1rem;
   }
-  
+
   .modal-header,
   .modal-body {
     padding: 1.5rem;

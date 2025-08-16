@@ -10,7 +10,22 @@
     @vite('resources/css/pagination.css')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="global-page auth-page">
+    <!-- Global Background -->
+    <div class="global-background"></div>
+    
+    <!-- Global Particles -->
+    <div class="global-particles">
+        <div class="global-particle" style="left: 15%; animation-delay: 1s;"></div>
+        <div class="global-particle" style="left: 25%; animation-delay: 3s;"></div>
+        <div class="global-particle" style="left: 35%; animation-delay: 5s;"></div>
+        <div class="global-particle" style="left: 45%; animation-delay: 7s;"></div>
+        <div class="global-particle" style="left: 55%; animation-delay: 9s;"></div>
+        <div class="global-particle" style="left: 65%; animation-delay: 11s;"></div>
+        <div class="global-particle" style="left: 75%; animation-delay: 13s;"></div>
+        <div class="global-particle" style="left: 85%; animation-delay: 15s;"></div>
+    </div>
+    
     <div class="dashboard-bg">
         <div class="max-w-7xl mx-auto">
             <!-- Header -->

@@ -42,7 +42,23 @@
         }
     </style>
 </head>
-<body>
+<body class="global-page trivia-page">
+    <!-- Global Background -->
+    <div class="global-background"></div>
+    
+    <!-- Global Particles -->
+    <div class="global-particles">
+        <div class="global-particle" style="left: 8%; animation-delay: 1.5s;"></div>
+        <div class="global-particle" style="left: 18%; animation-delay: 3.5s;"></div>
+        <div class="global-particle" style="left: 28%; animation-delay: 5.5s;"></div>
+        <div class="global-particle" style="left: 38%; animation-delay: 7.5s;"></div>
+        <div class="global-particle" style="left: 48%; animation-delay: 9.5s;"></div>
+        <div class="global-particle" style="left: 58%; animation-delay: 11.5s;"></div>
+        <div class="global-particle" style="left: 68%; animation-delay: 13.5s;"></div>
+        <div class="global-particle" style="left: 78%; animation-delay: 15.5s;"></div>
+        <div class="global-particle" style="left: 88%; animation-delay: 17.5s;"></div>
+    </div>
+    
     <div class="container">
         @auth
             @if(auth()->user()->is_admin ?? false)

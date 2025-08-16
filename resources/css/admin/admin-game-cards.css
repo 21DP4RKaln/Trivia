@@ -8,7 +8,11 @@
 }
 
 .game-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 20px;
   padding: 2rem;
@@ -26,7 +30,11 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1));
+    background: linear-gradient(
+      135deg,
+      rgba(16, 185, 129, 0.1),
+      rgba(59, 130, 246, 0.1)
+    );
     opacity: 0;
     transition: opacity 0.3s ease;
     border-radius: 20px;
@@ -230,7 +238,12 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
     animation: shimmer 2s infinite;
   }
 }
@@ -292,7 +305,11 @@
 }
 
 .modal-container {
-  background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.95));
+  background: linear-gradient(
+    135deg,
+    rgba(17, 24, 39, 0.95),
+    rgba(31, 41, 55, 0.95)
+  );
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 25px;
   max-width: 1000px;
@@ -400,7 +417,11 @@
   display: flex;
   align-items: center;
   gap: 2rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 20px;
   padding: 2rem;
@@ -467,7 +488,11 @@
 }
 
 .detail-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.04)
+  );
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 15px;
   padding: 2rem;
@@ -484,7 +509,11 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1));
+    background: linear-gradient(
+      135deg,
+      rgba(16, 185, 129, 0.1),
+      rgba(59, 130, 246, 0.1)
+    );
     opacity: 0;
     transition: opacity 0.3s ease;
     border-radius: 15px;
@@ -571,7 +600,11 @@
 }
 
 .question-timing-section {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.04)
+  );
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 15px;
   padding: 2rem;

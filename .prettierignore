@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+public/build/
+public/hot
+storage/
+
+# Laravel specific
+bootstrap/cache/
+.env
+.env.*
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Composer
+composer.lock
+
+# NPM
+package-lock.json
+
+# Git
+.git/
+
+# Cache
+.cache

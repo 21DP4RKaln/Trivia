@@ -18,6 +18,9 @@ Route::post('/forgot-password', [AuthController::class, 'sendPasswordResetLink']
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
+// Terms of Service
+Route::get('/terms-of-service', [AuthController::class, 'showTermsOfService'])->name('terms.service');
+
 // Dashboard
 Route::get('/dashboard', [AuthController::class, 'dashboard'])->middleware('auth')->name('dashboard');
 
@@ -28,6 +31,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('users.toggle-admin');
     Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
     Route::get('/questions', [AdminController::class, 'questions'])->name('questions');
+    Route::get('/terms-of-service', [AdminController::class, 'termsOfService'])->name('terms-of-service');
+    Route::post('/terms-of-service', [AdminController::class, 'updateTermsOfService'])->name('terms-of-service.update');
+    Route::get('/terms-of-service/analytics', [AdminController::class, 'getTermsAnalytics'])->name('terms-of-service.analytics');
+    Route::get('/terms-of-service/history/{id}', [AdminController::class, 'getTermsHistory'])->name('terms-of-service.history');
+    Route::get('/terms-of-service/export', [AdminController::class, 'exportTerms'])->name('terms-of-service.export');
     Route::get('/game-details/{gameSession}', [AdminController::class, 'gameDetails'])->name('game-details');
 });
 

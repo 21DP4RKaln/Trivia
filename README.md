@@ -1,8 +1,9 @@
-# Trivia Game 
+# Trivia Game
 
 ## Quick Start
 
 ### Prerequisites
+
 - PHP 8.2 or higher
 - Composer
 - Node.js & npm
@@ -12,30 +13,35 @@
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/your-username/trivia-game.git
    cd trivia-game
    ```
 
 2. **Install PHP dependencies**
+
    ```bash
    composer install
    ```
 
 3. **Install JavaScript dependencies**
+
    ```bash
    npm install
    ```
 
 4. **Environment Setup**
+
    ```bash
    cp .env.example .env
    php artisan key:generate
    ```
 
 5. **Configure Database**
-   
+
    Edit `.env` file with your database credentials:
+
    ```env
    DB_CONNECTION=mysql
    DB_HOST=127.0.0.1
@@ -46,12 +52,14 @@
    ```
 
 6. **Run Migrations & Seed Data**
+
    ```bash
    php artisan migrate
    php artisan db:seed
    ```
 
 7. **Build Assets**
+
    ```bash
    npm run build
    ```
@@ -76,6 +84,7 @@ Visit `http://localhost:8000` to access the application.
 ### Admin Functions
 
 1. **Become Admin**
+
    ```bash
    php artisan user:make-admin your-email@example.com
    ```
@@ -88,6 +97,7 @@ Visit `http://localhost:8000` to access the application.
 ## Technical Details
 
 ### Architecture
+
 - **Framework**: Laravel 12.x
 - **Frontend**: Blade templates with Tailwind CSS
 - **Database**: MySQL with Eloquent ORM
@@ -97,16 +107,19 @@ Visit `http://localhost:8000` to access the application.
 ### Key Components
 
 #### Models
+
 - **User**: Handles authentication and admin privileges
 - **GameSession**: Tracks individual game instances and statistics
 - **TriviaService**: Manages question generation and validation
 
 #### Controllers
+
 - **TriviaController**: Core game logic and question handling
 - **AdminController**: Admin panel functionality
 - **Auth Controllers**: User registration and authentication
 
 #### Middleware
+
 - **AdminMiddleware**: Protects admin routes and functionality
 
 ### Database Schema
@@ -119,7 +132,7 @@ users (
 
 -- Game sessions
 game_sessions (
-    id, user_id, score, total_questions, duration, 
+    id, user_id, score, total_questions, duration,
     completed_at, used_questions, gameplay_start_time, timestamps
 )
 ```
@@ -127,6 +140,7 @@ game_sessions (
 ## Configuration
 
 ### Environment Variables
+
 Key configuration options in `.env`:
 
 ```env
@@ -153,6 +167,7 @@ CACHE_STORE=database
 ```
 
 ### Admin Configuration
+
 - Admin privileges are stored in the `is_admin` column
 - Use the `user:make-admin` command to grant admin access
 - Admin middleware protects all admin routes
@@ -162,6 +177,7 @@ CACHE_STORE=database
 ### Common Issues
 
 **Database Connection Error**
+
 ```bash
 # Check database credentials in .env
 # Ensure MySQL is running
@@ -170,6 +186,7 @@ php artisan config:clear
 ```
 
 **Asset Build Issues**
+
 ```bash
 # Clear cache and rebuild
 npm run build
@@ -177,18 +194,21 @@ php artisan view:clear
 ```
 
 **Permission Issues**
+
 ```bash
 # Set proper permissions
 chmod -R 755 storage bootstrap/cache
 ```
 
 **Migration Errors**
+
 ```bash
 # Reset database if needed
 php artisan migrate:fresh --seed
 ```
 
 ### Performance Optimization
+
 - Enable caching for production: `CACHE_STORE=redis`
 - Use queue system for background tasks: `QUEUE_CONNECTION=redis`
 - Optimize assets: `npm run build` for production

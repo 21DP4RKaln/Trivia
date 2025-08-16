@@ -6,10 +6,24 @@
     <title>{{ $isLogin ? 'Login' : 'Register' }} - Number Trivia Game</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/scss/app.scss', 'resources/css/auth/auth.css', 'resources/js/app.js'])
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="global-page auth-page">
+    <!-- Global Background -->
+    <div class="global-background"></div>
+    
+    <!-- Global Particles -->
+    <div class="global-particles">
+        <div class="global-particle" style="left: 12%; animation-delay: 0.5s;"></div>
+        <div class="global-particle" style="left: 23%; animation-delay: 2.5s;"></div>
+        <div class="global-particle" style="left: 34%; animation-delay: 4.5s;"></div>
+        <div class="global-particle" style="left: 45%; animation-delay: 6.5s;"></div>
+        <div class="global-particle" style="left: 56%; animation-delay: 8.5s;"></div>
+        <div class="global-particle" style="left: 67%; animation-delay: 10.5s;"></div>
+        <div class="global-particle" style="left: 78%; animation-delay: 12.5s;"></div>
+        <div class="global-particle" style="left: 89%; animation-delay: 14.5s;"></div>
+    </div>
+    
     <div class="auth-page">
         <!-- Back Button -->
         <a href="{{ route('trivia.index') }}" class="back-button">
@@ -70,10 +84,9 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
-                      <div class="checkbox-wrapper">
+                    </div>                      <div class="checkbox-wrapper">
                         <input type="checkbox" name="terms" class="terms" required>
-                        <label>I agree to the <a href="{{ route('trivia.index') }}" class="terms-link">Terms of Service</a></label>
+                        <label>I agree to the <a href="{{ route('terms.service') }}" class="terms-link" target="_blank">Terms of Service</a></label>
                     </div>
                     
                     <button type="submit" class="auth-button">Sign Up</button>
