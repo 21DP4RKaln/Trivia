@@ -14,6 +14,7 @@ export default defineConfig({
         'resources/scss/auth/terms-of-service.scss',
         'resources/css/auth/auth.css',
         'resources/css/auth/forgot-password.css',
+        'resources/css/auth/reset-password.css',
         'resources/css/auth/terms-of-service.css',
         'resources/css/auth/user-dashboard.css',
         'resources/css/auth/mobile-auth.css',

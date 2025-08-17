@@ -5,253 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password - Number Trivia Game</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    @vite(['resources/scss/app.scss', 'resources/js/app.js'])
+    @vite(['resources/scss/app.scss', 'resources/css/auth/reset-password.css', 'resources/js/app.js'])
     @vite('resources/css/mobile-responsive.css')
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        .reset-password-page {
-            min-height: 100vh;
-            width: 100vw;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            background-attachment: fixed;
-        }
-
-        .reset-password-page::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('/image/logo.png') center/cover no-repeat;
-            opacity: 0.1;
-            z-index: 0;
-        }
-
-        .reset-password-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-            width: 500px;
-            max-width: 95%;
-            min-height: 550px;
-            z-index: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .reset-password-form {
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            padding: 60px 40px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .reset-password-title {
-            font-weight: 700;
-            font-size: 2.2rem;
-            margin: 0 0 20px 0;
-            color: #333;
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .reset-password-subtitle {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 40px;
-            line-height: 1.6;
-        }
-
-        .input-wrapper {
-            position: relative;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .auth-input {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 25px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-            outline: none;
-        }
-
-        .auth-input:focus {
-            border-color: var(--gradient-start);
-            background: #ffffff;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #666;
-            font-size: 18px;
-            transition: color 0.3s ease;
-        }
-
-        .password-toggle:hover {
-            color: var(--gradient-start);
-        }
-
-        .auth-button {
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            border: none;
-            border-radius: 25px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            padding: 15px 45px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-            width: 100%;
-        }
-
-        .auth-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
-        }
-
-        .auth-button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .back-link {
-            color: #666;
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .back-link:hover {
-            color: var(--gradient-start);
-        }
-
-        .back-button {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-        }
-
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .error-message {
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 12px 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            border-left: 4px solid #dc2626;
-            width: 100%;
-        }
-
-        .success-message {
-            background: #d1fae5;
-            color: #065f46;
-            padding: 12px 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            border-left: 4px solid #10b981;
-            width: 100%;
-        }
-
-        .icon-container {
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 30px auto;
-            color: white;
-            font-size: 32px;
-        }
-
-        .password-strength {
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
-
-        .strength-bar {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 8px;
-        }
-
-        .strength-segment {
-            height: 4px;
-            flex: 1;
-            border-radius: 2px;
-            background: #e1e5e9;
-            transition: all 0.3s ease;
-        }
-
-        .strength-text {
-            font-size: 12px;
-            color: #666;
-        }
-
-        @media (max-width: 768px) {
-            .reset-password-container {
-                width: 100%;
-                min-height: 100vh;
-                border-radius: 0;
-            }
-
-            .reset-password-form {
-                padding: 30px 20px;
-            }
-        }    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="global-page auth-page">
     <!-- Global Background -->
@@ -324,6 +81,7 @@
                         placeholder="New Password" 
                         required
                         autocomplete="new-password"
+                        onkeyup="checkPasswordStrength(this.value)"
                     >
                     <button type="button" class="password-toggle" onclick="togglePassword('password', this)">
                         <i class="fas fa-eye"></i>
@@ -439,8 +197,22 @@
             form.addEventListener('submit', function(e) {
                 const button = this.querySelector('.auth-button');
                 button.disabled = true;
+                button.classList.add('loading');
                 button.innerHTML = 'Resetting...';
+                
+                // Re-enable after timeout to prevent permanent disable on error
+                setTimeout(() => {
+                    button.disabled = false;
+                    button.classList.remove('loading');
+                    button.innerHTML = 'Reset Password';
+                }, 10000);
             });
+
+            // Ensure global background is visible
+            const globalBg = document.querySelector('.global-background');
+            if (globalBg) {
+                globalBg.style.display = 'block';
+            }
         });
     </script>
 </body>

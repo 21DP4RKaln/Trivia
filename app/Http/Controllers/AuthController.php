@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
+use App\Models\GameSession;
 use App\Models\TermsOfService;
 use Illuminate\Validation\ValidationException;
 
@@ -114,13 +116,24 @@ class AuthController
     {
         $request->validate(['email' => 'required|email']);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        try {
+            Log::info('Password reset requested for email: ' . $request->email);
+            
+            $status = Password::sendResetLink(
+                $request->only('email')
+            );
 
-        return $status === Password::RESET_LINK_SENT
-                    ? back()->with(['status' => __($status)])
-                    : back()->withErrors(['email' => __($status)]);
+            if ($status === Password::RESET_LINK_SENT) {
+                Log::info('Password reset link sent successfully to: ' . $request->email);
+                return back()->with(['status' => 'We have emailed your password reset link! Please check your inbox and spam folder.']);
+            } else {
+                Log::warning('Password reset link failed for: ' . $request->email . ' - Status: ' . $status);
+                return back()->withErrors(['email' => __($status)]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Password reset error for: ' . $request->email . ' - Error: ' . $e->getMessage());
+            return back()->withErrors(['email' => 'There was a problem sending the password reset email. Please try again later.']);
+        }
     }
 
     public function showResetPasswordForm(Request $request, string $token): View

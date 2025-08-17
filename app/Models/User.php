@@ -6,6 +6,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Auth\Notifications\ResetPassword;
+use App\Mail\ResetPasswordMail;
+use Illuminate\Support\Facades\Mail;
 
 class User extends Authenticatable
 {
@@ -129,5 +132,21 @@ class User extends Authenticatable
     public function removeAdmin(): void
     {
         $this->update(['is_admin' => false]);
+    }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        try {
+            Mail::to($this->email)->send(new ResetPasswordMail($token, $this->email, $this));
+        } catch (\Exception $e) {
+            // Fallback to default Laravel notification if custom mail fails
+            $this->notify(new ResetPassword($token));
+        }
     }
 }

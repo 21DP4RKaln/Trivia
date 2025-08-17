@@ -44,26 +44,33 @@
                 @if($errors->any())
                     <div class="error-message">
                         @foreach($errors->all() as $error)
-                            <div>{{ $error }}</div>
+                            <div><i class="fas fa-exclamation-circle"></i> {{ $error }}</div>
                         @endforeach
                     </div>
                 @endif
 
                 @if(session('status'))
                     <div class="success-message">
-                        {{ session('status') }}
+                        <i class="fas fa-check-circle"></i> {{ session('status') }}
                     </div>
                 @endif
                 
-                <input 
-                    type="email" 
-                    class="auth-input" 
-                    name="email" 
-                    placeholder="Enter your email address" 
-                    value="{{ old('email') }}" 
-                    required
-                    autocomplete="email"
-                >
+                <div class="input-wrapper">
+                    <input 
+                        type="email" 
+                        class="auth-input" 
+                        name="email" 
+                        id="email"
+                        placeholder="Enter your email address" 
+                        value="{{ old('email') }}" 
+                        required
+                        autocomplete="email"
+                        aria-describedby="email-help"
+                    >
+                    <div id="email-help" class="input-help">
+                        We'll send you a link to reset your password
+                    </div>
+                </div>
                 
                 <button type="submit" class="auth-button">
                     Send Reset Link
@@ -78,15 +85,106 @@
     </div>
 
     <script>
-        // Add form validation
+        // Add form validation and improved UX
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form');
+            const emailInput = document.querySelector('input[name="email"]');
+            const submitButton = document.querySelector('.auth-button');
             
-            form.addEventListener('submit', function(e) {
-                const button = this.querySelector('.auth-button');
-                button.disabled = true;
-                button.innerHTML = 'Sending...';
+            // Email validation
+            emailInput.addEventListener('blur', function() {
+                validateEmail(this);
             });
+            
+            emailInput.addEventListener('input', function() {
+                // Remove error styling while typing
+                this.style.borderColor = '#e1e5e9';
+                this.style.backgroundColor = '#f8f9fa';
+            });
+            
+            // Form submission with loading state
+            form.addEventListener('submit', function(e) {
+                if (!validateEmail(emailInput)) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                submitButton.disabled = true;
+                submitButton.classList.add('loading');
+                submitButton.innerHTML = 'Sending...';
+                
+                // Re-enable button after 10 seconds as fallback
+                setTimeout(() => {
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('loading');
+                    submitButton.innerHTML = 'Send Reset Link';
+                }, 10000);
+            });
+        });
+        
+        function validateEmail(input) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const isValid = emailPattern.test(input.value);
+            
+            if (input.value && !isValid) {
+                input.style.borderColor = '#dc2626';
+                input.style.backgroundColor = '#fee2e2';
+                showTooltip(input, 'Please enter a valid email address');
+                return false;
+            } else {
+                input.style.borderColor = '#10b981';
+                input.style.backgroundColor = '#f0fdf4';
+                hideTooltip(input);
+                return true;
+            }
+        }
+        
+        function showTooltip(element, message) {
+            // Remove existing tooltip
+            hideTooltip(element);
+            
+            const tooltip = document.createElement('div');
+            tooltip.className = 'error-tooltip';
+            tooltip.textContent = message;
+            tooltip.style.cssText = `
+                position: absolute;
+                bottom: -25px;
+                left: 0;
+                background: #dc2626;
+                color: white;
+                padding: 5px 10px;
+                border-radius: 5px;
+                font-size: 12px;
+                white-space: nowrap;
+                z-index: 1000;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            element.parentElement.style.position = 'relative';
+            element.parentElement.appendChild(tooltip);
+        }
+        
+        function hideTooltip(element) {
+            const tooltip = element.parentElement.querySelector('.error-tooltip');
+            if (tooltip) {
+                tooltip.remove();
+            }
+        }
+
+        // Ensure global background is properly initialized
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize global background particles if needed
+            const particlesContainer = document.querySelector('.global-particles');
+            if (particlesContainer && particlesContainer.children.length === 0) {
+                // Add some particles dynamically if none exist
+                for (let i = 0; i < 8; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'global-particle';
+                    particle.style.left = (10 + i * 10) + '%';
+                    particle.style.animationDelay = (i * 2) + 's';
+                    particlesContainer.appendChild(particle);
+                }
+            }
         });
     </script>
 </body>
