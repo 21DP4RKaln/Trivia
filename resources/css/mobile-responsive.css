@@ -1,0 +1,250 @@
+/* Mobile Responsive Enhancements for All Pages */
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+
+  body {
+    padding: 0;
+    margin: 0;
+  }
+
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 1rem !important;
+    border-radius: 0 !important;
+    min-height: 100vh;
+  }
+
+  .main-title {
+    font-size: 2rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .section-title {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .btn {
+    min-width: 100px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.875rem !important;
+    margin: 0.25rem !important;
+  }
+
+  .auth-actions {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+  }
+
+  .auth-actions .btn {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .stats-card {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    padding: 1rem !important;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .stat-card {
+    padding: 1rem !important;
+  }
+
+  .stat-number {
+    font-size: 1.75rem !important;
+  }
+
+  .question-card {
+    padding: 1rem !important;
+    margin: 0.5rem 0 !important;
+  }
+
+  .options-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+
+  .option {
+    padding: 1rem !important;
+    font-size: 1rem !important;
+    text-align: center;
+  }
+
+  .progress-indicator {
+    height: 4px !important;
+  }
+
+  .nav-links {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 13px;
+  }
+
+  .container {
+    padding: 0.75rem !important;
+  }
+
+  .main-title {
+    font-size: 1.75rem !important;
+  }
+
+  .btn {
+    padding: 0.625rem 0.875rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  .stat-number {
+    font-size: 1.5rem !important;
+  }
+
+  .option {
+    padding: 0.875rem !important;
+    font-size: 0.9rem !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    max-width: 90% !important;
+    padding: 2rem !important;
+  }
+
+  .stats-card {
+    padding: 1.25rem !important;
+  }
+
+  .main-title {
+    font-size: 2.5rem !important;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  .container {
+    padding: 0.75rem !important;
+  }
+
+  .main-title {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .stats-card {
+    flex-direction: row !important;
+    padding: 0.75rem !important;
+  }
+
+  .auth-actions {
+    flex-direction: row !important;
+    justify-content: center !important;
+  }
+
+  .auth-actions .btn {
+    width: auto !important;
+    min-width: 120px !important;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .btn {
+    min-height: 44px !important;
+    touch-action: manipulation;
+  }
+
+  .option {
+    min-height: 44px !important;
+    touch-action: manipulation;
+  }
+
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  textarea,
+  select {
+    min-height: 44px !important;
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 768px) and (prefers-color-scheme: dark) {
+  .container {
+    background: rgba(0, 0, 0, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .stats-card {
+    background: rgba(0, 0, 0, 0.6) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .btn:focus,
+  .option:focus,
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: 3px solid #10b981 !important;
+    outline-offset: 2px !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @media (prefers-contrast: high) {
+    .container {
+      border: 2px solid #000 !important;
+      background: #fff !important;
+      color: #000 !important;
+    }
+
+    .btn {
+      border: 2px solid #000 !important;
+      background: #fff !important;
+      color: #000 !important;
+    }
+
+    .btn:hover {
+      background: #000 !important;
+      color: #fff !important;
+    }
+  }
+}
+
+@media print and (max-width: 768px) {
+  .container {
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+    background: #fff !important;
+  }
+
+  .btn,
+  .auth-actions {
+    display: none !important;
+  }
+
+  .stats-card {
+    background: #fff !important;
+    border: 1px solid #000 !important;
+  }
+}

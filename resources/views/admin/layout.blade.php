@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin Panel') - Trivia Admin</title>
     <link rel="icon" href="{{ asset('image/logo.png') }}" type="image/png">
-    @vite(['resources/scss/app.scss', 'resources/scss/admin/admin.scss', 'resources/scss/admin/admin-statistics.scss', 'resources/scss/admin/admin-questions.scss', 'resources/scss/admin/terms-of-service.scss', 'resources/css/admin/admin-users.css', 'resources/css/admin/admin-dashboard.css', 'resources/css/admin/admin-statistics.css', 'resources/css/admin/admin-questions.css', 'resources/css/admin/terms-of-service.css', 'resources/css/pagination.css', 'resources/js/app.js', 'resources/js/admin/admin-users.js', 'resources/js/admin/admin-dashboard.js', 'resources/js/admin/admin-questions.js', 'resources/js/admin/terms-of-service.js'])
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#10b981">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    @vite(['resources/scss/app.scss', 'resources/scss/admin/admin.scss', 'resources/scss/admin/admin-statistics.scss', 'resources/scss/admin/admin-questions.scss', 'resources/scss/admin/terms-of-service.scss', 'resources/css/admin/admin-users.css', 'resources/css/admin/admin-dashboard.css', 'resources/css/admin/admin-statistics.css', 'resources/css/admin/admin-questions.css', 'resources/css/admin/terms-of-service.css', 'resources/css/pagination.css', 'resources/css/mobile-responsive.css', 'resources/css/mobile-utilities.css', 'resources/js/app.js', 'resources/js/admin/admin-users.js', 'resources/js/admin/admin-dashboard.js', 'resources/js/admin/admin-questions.js', 'resources/js/admin/terms-of-service.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/loader.css') }}">
     @stack('styles')
@@ -113,9 +117,12 @@
             <div class="nav-brand">
                 <img src="{{ asset('image/logo.png') }}" alt="Trivia Logo" class="nav-logo">
                 <h1>Admin Panel</h1>
+                <button class="mobile-nav-toggle" onclick="toggleMobileNav()" style="display: none;">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
             
-            <div class="nav-links">
+            <div class="nav-links" id="mobile-nav-links">
                 <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <i class="fas fa-chart-line"></i>
                     Dashboard
@@ -145,11 +152,13 @@
                 <div class="user-actions">
                     <a href="{{ route('dashboard') }}" class="btn btn-ghost btn-sm">
                         <i class="fas fa-home"></i>
+                        <span class="btn-text">Dashboard</span>
                     </a>
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf
                         <button type="submit" class="btn btn-ghost btn-sm">
                             <i class="fas fa-sign-out-alt"></i>
+                            <span class="btn-text">Logout</span>
                         </button>
                     </form>
                 </div>
@@ -226,6 +235,26 @@
             }
         }
 
+        // Mobile navigation toggle functionality
+        function toggleMobileNav() {
+            const navLinks = document.getElementById('mobile-nav-links');
+            const toggleButton = document.querySelector('.mobile-nav-toggle');
+            
+            if (navLinks && toggleButton) {
+                const isOpen = navLinks.classList.contains('mobile-nav-open');
+                
+                if (isOpen) {
+                    navLinks.classList.remove('mobile-nav-open');
+                    toggleButton.classList.remove('active');
+                    document.body.classList.remove('mobile-nav-open');
+                } else {
+                    navLinks.classList.add('mobile-nav-open');
+                    toggleButton.classList.add('active');
+                    document.body.classList.add('mobile-nav-open');
+                }
+            }
+        }
+
         // Initialize scroll progress on page load
         document.addEventListener('DOMContentLoaded', () => {
             scrollIndicator = document.getElementById('scrollIndicator');
@@ -236,6 +265,39 @@
             
             // Initial calculation
             setTimeout(updateScrollProgress, 100);
+            
+            // Close mobile nav when clicking outside
+            document.addEventListener('click', (e) => {
+                const navLinks = document.getElementById('mobile-nav-links');
+                const toggleButton = document.querySelector('.mobile-nav-toggle');
+                
+                if (navLinks && toggleButton && 
+                    navLinks.classList.contains('mobile-nav-open') &&
+                    !navLinks.contains(e.target) && 
+                    !toggleButton.contains(e.target)) {
+                    toggleMobileNav();
+                }
+            });
+            
+            // Close mobile nav on escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const navLinks = document.getElementById('mobile-nav-links');
+                    if (navLinks && navLinks.classList.contains('mobile-nav-open')) {
+                        toggleMobileNav();
+                    }
+                }
+            });
+            
+            // Close mobile nav when navigation link is clicked
+            const navLinksElement = document.getElementById('mobile-nav-links');
+            if (navLinksElement) {
+                navLinksElement.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('nav-link')) {
+                        toggleMobileNav();
+                    }
+                });
+            }
         });
     </script>
 

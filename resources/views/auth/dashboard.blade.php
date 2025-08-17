@@ -8,6 +8,7 @@
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
     @vite('resources/css/auth/user-dashboard.css')
     @vite('resources/css/pagination.css')
+    @vite('resources/css/mobile-responsive.css')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="global-page auth-page">

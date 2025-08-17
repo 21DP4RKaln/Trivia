@@ -15,8 +15,13 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController
 {
-    public function showLoginForm(): View
+    public function showLoginForm(Request $request): View
     {
+        // Check if request is from mobile device
+        if ($this->isMobileDevice($request)) {
+            return view('auth.mobile-auth', ['isLogin' => true]);
+        }
+        
         return view('auth.auth', ['isLogin' => true]);
     }
 
@@ -37,8 +42,13 @@ class AuthController
         ])->withInput($request->only('email'));
     }
 
-    public function showRegisterForm(): View
+    public function showRegisterForm(Request $request): View
     {
+        // Check if request is from mobile device
+        if ($this->isMobileDevice($request)) {
+            return view('auth.mobile-auth', ['isLogin' => false]);
+        }
+        
         return view('auth.auth', ['isLogin' => false]);
     }
 
@@ -183,5 +193,48 @@ class AuthController
                 'error' => 'Failed to check for updates'
             ], 500);
         }
+    }
+
+    /**
+     * Detect if the request is from a mobile device
+     */
+    private function isMobileDevice(Request $request): bool
+    {
+        $userAgent = $request->header('User-Agent', '');
+        
+        // Check for mobile patterns in user agent
+        $mobilePatterns = [
+            '/Mobile/',
+            '/Android/',
+            '/iPhone/',
+            '/iPad/',
+            '/iPod/',
+            '/BlackBerry/',
+            '/Windows Phone/',
+            '/webOS/',
+            '/Opera Mini/',
+            '/Opera Mobi/'
+        ];
+        
+        foreach ($mobilePatterns as $pattern) {
+            if (preg_match($pattern, $userAgent)) {
+                return true;
+            }
+        }
+        
+        // Check for small screen size via viewport width (if available)
+        if ($request->hasHeader('Sec-CH-Viewport-Width')) {
+            $viewportWidth = intval($request->header('Sec-CH-Viewport-Width'));
+            if ($viewportWidth > 0 && $viewportWidth <= 768) {
+                return true;
+            }
+        }
+        
+        // Check for touch capability
+        if ($request->hasHeader('Sec-CH-UA-Mobile') && $request->header('Sec-CH-UA-Mobile') === '?1') {
+            return true;
+        }
+        
+        return false;
     }
 }

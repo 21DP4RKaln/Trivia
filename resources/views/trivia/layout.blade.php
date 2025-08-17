@@ -5,7 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trivia Game - @yield('title')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#10b981">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
+    @vite('resources/css/mobile-responsive.css')
+    @vite('resources/css/mobile-utilities.css')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/loader.css') }}">
     @stack('styles')
@@ -82,18 +88,7 @@
         
         @media (max-width: 768px) {
             .keyboard-hints {
-                margin-bottom: 1.5rem;
-                padding: 0.75rem 1rem;
-            }
-            
-            .hint-text {
-                font-size: 0.8rem;
-                gap: 0.25rem;
-            }
-            
-            kbd {
-                padding: 0.2rem 0.4rem;
-                font-size: 0.7rem;
+                display: none !important;
             }
         }
     </style>

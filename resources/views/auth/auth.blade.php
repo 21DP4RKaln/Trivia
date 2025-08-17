@@ -6,6 +6,7 @@
     <title>{{ $isLogin ? 'Login' : 'Register' }} - Number Trivia Game</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/scss/app.scss', 'resources/css/auth/auth.css', 'resources/js/app.js'])
+    @vite('resources/css/mobile-responsive.css')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="global-page auth-page">
