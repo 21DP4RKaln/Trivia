@@ -2,7 +2,7 @@
 
 ## Features
 
-### 🎮 Core Game Features
+### Core Game Features
 - **Smart Question Generation**: Dynamic trivia questions across multiple categories
 - **Auto-Save Functionality**: Games automatically save after each question
 - **Cross-Session Persistence**: Continue games even after browser restarts
@@ -300,7 +300,7 @@ icacls bootstrap/cache /grant Users:(OI)(CI)F /T
 **Migration Errors**
 
 ```bash
-# Reset database if needed (⚠️ WARNING: This will delete all data)
+# Reset database if needed (WARNING: This will delete all data)
 php artisan migrate:fresh --seed
 
 # Or run migrations step by step
