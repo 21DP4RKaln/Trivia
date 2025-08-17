@@ -77,7 +77,10 @@ class AuthController
 
         Auth::login($user);
 
-        return redirect()->route('dashboard')->with('success', 'Welcome! Your account has been created successfully.');
+        // Send email verification notification
+        $user->sendEmailVerificationNotification();
+
+        return redirect()->route('verification.notice')->with('success', 'Welcome! Your account has been created successfully. Please check your email to verify your account.');
     }
 
     public function logout(Request $request): RedirectResponse
@@ -86,6 +89,49 @@ class AuthController
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('trivia.index');
+    }
+
+    public function showVerificationNotice(): View
+    {
+        return view('auth.verify-email');
+    }
+
+    public function verifyEmail(Request $request): RedirectResponse
+    {
+        $user = User::findOrFail($request->route('id'));
+
+        if (! hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
+            return redirect()->route('verification.notice')->withErrors(['email' => 'Invalid verification link.']);
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect()->route('dashboard')->with('success', 'Your email is already verified!');
+        }
+
+        if ($user->markEmailAsVerified()) {
+            // Email was successfully verified
+            return redirect()->route('dashboard')->with('success', 'Your email has been verified successfully!');
+        }
+
+        return redirect()->route('verification.notice')->withErrors(['email' => 'Unable to verify email. Please try again.']);
+    }
+
+    public function resendVerificationEmail(Request $request): RedirectResponse
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->route('dashboard')->with('success', 'Your email is already verified!');
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('status', 'A fresh verification link has been sent to your email address!');
+    }
+
+    public function checkVerificationStatus(Request $request)
+    {
+        return response()->json([
+            'verified' => $request->user() ? $request->user()->hasVerifiedEmail() : false
+        ]);
     }
 
     public function dashboard(): View

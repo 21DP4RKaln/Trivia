@@ -18,18 +18,28 @@ Route::post('/forgot-password', [AuthController::class, 'sendPasswordResetLink']
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
+// Email Verification Routes
+Route::get('/email/verify', [AuthController::class, 'showVerificationNotice'])->middleware('auth')->name('verification.notice');
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->middleware(['auth', 'signed'])->name('verification.verify');
+Route::post('/email/verification-notification', [AuthController::class, 'resendVerificationEmail'])->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+Route::get('/email/verify/check-status', [AuthController::class, 'checkVerificationStatus'])->middleware('auth');
+
 // Terms of Service
 Route::get('/terms-of-service', [AuthController::class, 'showTermsOfService'])->name('terms.service');
 Route::get('/terms-of-service/check-updates', [AuthController::class, 'checkTermsUpdates'])->name('terms.check-updates');
 
 // Dashboard
-Route::get('/dashboard', [AuthController::class, 'dashboard'])->middleware('auth')->name('dashboard');
+Route::get('/dashboard', [AuthController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
 // Admin routes 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::post('/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('users.toggle-admin');
+    Route::post('/users/{user}/send-verification', [AdminController::class, 'sendVerificationEmail'])->name('users.send-verification');
+    Route::get('/users/{user}/ban', [AdminController::class, 'showBanForm'])->name('users.ban-form');
+    Route::post('/users/{user}/ban', [AdminController::class, 'banUser'])->name('users.ban');
+    Route::post('/users/{user}/unban', [AdminController::class, 'unbanUser'])->name('users.unban');
     Route::get('/statistics', [AdminController::class, 'statistics'])->name('statistics');
     Route::get('/questions', [AdminController::class, 'questions'])->name('questions');
     Route::get('/terms-of-service', [AdminController::class, 'termsOfService'])->name('terms-of-service');

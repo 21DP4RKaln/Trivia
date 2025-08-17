@@ -14,11 +14,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'saved-game' => \App\Http\Middleware\CheckSavedGame::class,
+            'check-ban' => \App\Http\Middleware\CheckBanStatus::class,
         ]);
         
-        // Apply CheckSavedGame middleware to web routes
+        // Apply middleware to web routes
         $middleware->web(append: [
             \App\Http\Middleware\CheckSavedGame::class,
+            \App\Http\Middleware\CheckBanStatus::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

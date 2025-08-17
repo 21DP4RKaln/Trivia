@@ -39,6 +39,16 @@
                 <i class="fas fa-arrow-{{ $userGrowthPercentage >= 0 ? 'up' : 'down' }}"></i>
                 <span>{{ $userGrowthPercentage >= 0 ? '+' : '' }}{{ $userGrowthPercentage }}% this month</span>
             </div>
+            <div class="stat-breakdown">
+                <div class="breakdown-item">
+                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                    <span>{{ $verifiedUsers }} verified</span>
+                </div>
+                <div class="breakdown-item">
+                    <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i>
+                    <span>{{ $unverifiedUsers }} unverified</span>
+                </div>
+            </div>
         </div>
         <div class="stat-graph">
             <div class="mini-chart users-chart"></div>

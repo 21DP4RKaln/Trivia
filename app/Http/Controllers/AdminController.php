@@ -28,6 +28,10 @@ class AdminController extends Controller
         // Get current stats
         $totalUsers = User::count();
         $adminUsers = User::where('is_admin', true)->count();
+        $verifiedUsers = User::whereNotNull('email_verified_at')->count();
+        $unverifiedUsers = User::whereNull('email_verified_at')->count();
+        $bannedUsers = User::where('is_banned', true)->count();
+        $activeUsers = User::where('is_banned', false)->count();
         $totalGames = GameSession::where('completed', true)->count();
         
         // Calculate 30-day statistics
@@ -156,7 +160,7 @@ class AdminController extends Controller
         $weeklyTrends = array_reverse($weeklyTrends); 
 
         return view('admin.dashboard', compact(
-            'totalUsers', 'adminUsers', 'totalGames', 'recentGames',
+            'totalUsers', 'adminUsers', 'verifiedUsers', 'unverifiedUsers', 'bannedUsers', 'activeUsers', 'totalGames', 'recentGames',
             'userGrowthPercentage', 'adminGrowthPercentage', 'gameGrowthPercentage', 
             'todayGrowthPercentage', 'gamesToday', 'completionRate',
             'averageAccuracyLast30Days', 'perfectGamesLast30Days', 'uniquePlayersLast30Days',
@@ -206,6 +210,23 @@ class AdminController extends Controller
         
         $status = $user->is_admin ? 'granted' : 'removed';
         return redirect()->back()->with('success', "Admin privileges {$status} for {$user->name}");
+    }
+
+    /**
+     * Send verification email to a user
+     */
+    public function sendVerificationEmail(User $user)
+    {
+        if ($user->hasVerifiedEmail()) {
+            return redirect()->back()->with('error', "{$user->name}'s email is already verified.");
+        }
+
+        try {
+            $user->sendEmailVerificationNotification();
+            return redirect()->back()->with('success', "Verification email sent to {$user->name} ({$user->email})");
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', "Failed to send verification email to {$user->name}. Please try again.");
+        }
     }
 
     /**
@@ -568,5 +589,86 @@ class AdminController extends Controller
             'effective_date' => $effectiveDate,
             'content' => $content
         ]);
+    }
+
+    /**
+     * Ban a user
+     */
+    public function banUser(Request $request, User $user)
+    {
+        // Prevent banning admin users
+        if ($user->isAdmin()) {
+            return redirect()->back()->with('error', 'Cannot ban admin users');
+        }
+
+        // Prevent self-banning
+        if ($user->id === Auth::id()) {
+            return redirect()->back()->with('error', 'You cannot ban yourself');
+        }
+
+        $request->validate([
+            'ban_reason' => 'required|string|max:500',
+            'ban_type' => 'required|in:permanent,temporary',
+            'ban_duration' => 'required_if:ban_type,temporary|integer|min:1|max:365',
+            'ban_duration_unit' => 'required_if:ban_type,temporary|in:hours,days,weeks,months'
+        ]);
+
+        $expiresAt = null;
+        if ($request->ban_type === 'temporary') {
+            $duration = (int) $request->ban_duration;
+            $unit = $request->ban_duration_unit;
+            
+            switch ($unit) {
+                case 'hours':
+                    $expiresAt = now()->addHours($duration);
+                    break;
+                case 'days':
+                    $expiresAt = now()->addDays($duration);
+                    break;
+                case 'weeks':
+                    $expiresAt = now()->addWeeks($duration);
+                    break;
+                case 'months':
+                    $expiresAt = now()->addMonths($duration);
+                    break;
+            }
+        }
+
+        $user->ban($request->ban_reason, $expiresAt, Auth::id());
+
+        $banType = $request->ban_type === 'permanent' ? 'permanently' : "temporarily until {$expiresAt->format('M j, Y g:i A')}";
+        return redirect()->back()->with('success', "User {$user->name} has been banned {$banType}");
+    }
+
+    /**
+     * Unban a user
+     */
+    public function unbanUser(User $user)
+    {
+        if (!$user->isBanned()) {
+            return redirect()->back()->with('error', 'User is not currently banned');
+        }
+
+        $user->unban();
+
+        return redirect()->back()->with('success', "User {$user->name} has been unbanned");
+    }
+
+    /**
+     * Show ban form for a user
+     */
+    public function showBanForm(User $user)
+    {
+        // Prevent banning admin users
+        if ($user->isAdmin()) {
+            return redirect()->back()->with('error', 'Cannot ban admin users');
+        }
+
+        // Prevent self-banning
+        if ($user->id === Auth::id()) {
+            return redirect()->back()->with('error', 'You cannot ban yourself');
+        }
+
+        return view('admin.ban-user', compact('user'));
     }
 }

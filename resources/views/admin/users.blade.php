@@ -71,6 +71,7 @@
                         <th>User</th>
                         <th>Email</th>
                         <th>Role</th>
+                        <th>Status</th>
                         <th>Registration</th>
                         <th>Games Stats</th>
                         <th>Actions</th>
@@ -78,7 +79,7 @@
                 </thead>
                 <tbody>
                     @foreach($users as $user)
-                        <tr class="user-row {{ $user->is_admin ? 'admin-user' : '' }}">
+                        <tr class="user-row {{ $user->is_admin ? 'admin-user' : '' }} {{ $user->isBanned() ? 'banned-user' : '' }}">
                             <td class="user-cell">
                                 <div class="user-info">
                                     <div class="user-details">
@@ -119,6 +120,31 @@
                                 @endif
                             </td>
                             
+                            <td class="status-cell">
+                                @if($user->isBanned())
+                                    @if($user->hasPermanentBan())
+                                        <span class="status-badge banned-badge">
+                                            <i class="fas fa-ban"></i>
+                                            Permanently Banned
+                                        </span>
+                                    @else
+                                        <span class="status-badge temp-banned-badge">
+                                            <i class="fas fa-clock"></i>
+                                            Banned Until {{ $user->ban_expires_at->format('M j, Y') }}
+                                        </span>
+                                    @endif
+                                    @if($user->ban_reason)
+                                        <div class="ban-reason" title="{{ $user->ban_reason }}">
+                                            {{ Str::limit($user->ban_reason, 50) }}
+                                        </div>
+                                    @endif
+                                @else
+                                    <span class="status-badge active-badge">
+                                        Active
+                                    </span>
+                                @endif
+                            </td>
+                            
                             <td class="date-cell">
                                 <div class="date-info">
                                     <div class="date">{{ $user->created_at->format('M j, Y') }}</div>
@@ -143,22 +169,60 @@
                             
                             <td class="actions-cell">
                                 <div class="action-buttons">
-                                    <form method="POST" action="{{ route('admin.users.toggle-admin', $user) }}" 
-                                          class="toggle-form" 
-                                          onsubmit="return confirmToggle('{{ $user->name }}', {{ $user->is_admin ? 'true' : 'false' }})">
-                                        @csrf
-                                        @if($user->is_admin)
-                                            <button type="submit" class="btn btn-danger btn-sm" title="Remove Admin">
-                                                <i class="fas fa-user-minus"></i>
-                                                Remove Admin
+                                    <!-- Email Verification Actions -->
+                                    @if(!$user->email_verified_at)
+                                        <form method="POST" action="{{ route('admin.users.send-verification', $user) }}" 
+                                              class="verification-form" 
+                                              style="display: inline-block;">
+                                            @csrf
+                                            <button type="submit" class="btn btn-info btn-sm" title="Send Verification Email">
+                                                <i class="fas fa-envelope"></i>
+                                                Send Verification
                                             </button>
+                                        </form>
+                                    @endif
+
+                                    <!-- Admin Toggle Actions -->
+                                    @if($user->id !== Auth::id())
+                                        <form method="POST" action="{{ route('admin.users.toggle-admin', $user) }}" 
+                                              class="toggle-form" 
+                                              onsubmit="return confirmToggle('{{ $user->name }}', {{ $user->is_admin ? 'true' : 'false' }})">
+                                            @csrf
+                                            @if($user->is_admin)
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Remove Admin">
+                                                    <i class="fas fa-user-minus"></i>
+                                                    Remove Admin
+                                                </button>
+                                            @else
+                                                <button type="submit" class="btn btn-success btn-sm" title="Make Admin">
+                                                    <i class="fas fa-user-plus"></i>
+                                                    Make Admin
+                                                </button>
+                                            @endif
+                                        </form>
+                                    @endif
+
+                                    <!-- Ban/Unban Actions -->
+                                    @if($user->id !== Auth::id() && !$user->is_admin)
+                                        @if($user->isBanned())
+                                            <form method="POST" action="{{ route('admin.users.unban', $user) }}" 
+                                                  class="unban-form" 
+                                                  onsubmit="return confirm('Are you sure you want to unban {{ $user->name }}?')">
+                                                @csrf
+                                                <button type="submit" class="btn btn-warning btn-sm" title="Unban User">
+                                                    <i class="fas fa-unlock"></i>
+                                                    Unban
+                                                </button>
+                                            </form>
                                         @else
-                                            <button type="submit" class="btn btn-success btn-sm" title="Make Admin">
-                                                <i class="fas fa-user-plus"></i>
-                                                Make Admin
-                                            </button>
+                                            <a href="{{ route('admin.users.ban-form', $user) }}" 
+                                               class="btn btn-outline btn-sm" 
+                                               title="Ban User">
+                                                <i class="fas fa-ban"></i>
+                                                Ban
+                                            </a>
                                         @endif
-                                    </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
