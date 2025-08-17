@@ -102,8 +102,7 @@
                         <span id="save-text">Saved</span>
                     </div>
                 </div>
-                
-                <div class="form-group-grid">
+                  <div class="form-group-grid">
                     <div class="form-group">
                         <label for="version">Version</label>
                         <input type="text" id="version" name="version" 
@@ -116,6 +115,44 @@
                         <input type="date" id="effective_date" name="effective_date" 
                                value="{{ old('effective_date', $currentTerms ? $currentTerms->effective_date->format('Y-m-d') : now()->format('Y-m-d')) }}" 
                                required>
+                    </div>
+                </div>
+
+                <!-- Contact Information Section -->
+                <div class="contact-section">
+                    <h3><i class="fas fa-address-book"></i> Contact Information</h3>
+                    <p class="section-description">Manage the contact information displayed in the terms of service</p>
+                    
+                    <div class="form-group-grid">
+                        <div class="form-group">
+                            <label for="company_name">Company Name</label>
+                            <input type="text" id="company_name" name="company_name" 
+                                   value="{{ old('company_name', $currentTerms->company_name ?? 'Trivia Game') }}" 
+                                   placeholder="Company or Service Name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact_email">Contact Email</label>
+                            <input type="email" id="contact_email" name="contact_email" 
+                                   value="{{ old('contact_email', $currentTerms->contact_email ?? 'support@trivia.com') }}" 
+                                   placeholder="contact@example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group-grid">
+                        <div class="form-group">
+                            <label for="contact_phone">Contact Phone (Optional)</label>
+                            <input type="tel" id="contact_phone" name="contact_phone" 
+                                   value="{{ old('contact_phone', $currentTerms->contact_phone ?? '') }}" 
+                                   placeholder="+1 (555) 123-4567">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contact_address">Address</label>
+                            <input type="text" id="contact_address" name="contact_address" 
+                                   value="{{ old('contact_address', $currentTerms->contact_address ?? 'Trivia Game') }}" 
+                                   placeholder="Company Address">
+                        </div>
                     </div>
                 </div>
                 
@@ -165,10 +202,25 @@
                     <span>Effective: <strong id="preview-date">{{ $currentTerms ? $currentTerms->effective_date->format('M d, Y') : now()->format('M d, Y') }}</strong></span>
                 </div>
             </div>
-            
-            <div class="preview-content">
+              <div class="preview-content">
                 <div id="preview-text">
                     {!! nl2br(e($currentTerms->content ?? 'No content available.')) !!}
+                </div>
+                
+                <!-- Contact Information Preview -->
+                <div class="contact-info-preview">
+                    <h3><i class="fas fa-envelope"></i> Contact Information</h3>
+                    <p>If you have any questions about these Terms of Service, please contact us:</p>
+                    <ul class="contact-list">
+                        <li><strong>Email:</strong> <span id="preview-contact-email">{{ $currentTerms->contact_email ?? 'support@trivia.com' }}</span></li>
+                        <li id="preview-contact-phone-item" style="{{ empty($currentTerms->contact_phone) ? 'display: none;' : '' }}">
+                            <strong>Phone:</strong> <span id="preview-contact-phone">{{ $currentTerms->contact_phone ?? '' }}</span>
+                        </li>
+                        <li><strong>Address:</strong> <span id="preview-contact-address">{{ $currentTerms->contact_address ?? 'Trivia Game' }}</span></li>
+                        <li id="preview-company-name-item" style="{{ empty($currentTerms->company_name) || $currentTerms->company_name === $currentTerms->contact_address ? 'display: none;' : '' }}">
+                            <strong>Company:</strong> <span id="preview-company-name">{{ $currentTerms->company_name ?? '' }}</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
             

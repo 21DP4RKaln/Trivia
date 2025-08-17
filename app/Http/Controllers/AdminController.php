@@ -481,7 +481,11 @@ class AdminController extends Controller
         $request->validate([
             'content' => 'required|string',
             'version' => 'required|string|max:50',
-            'effective_date' => 'required|date'
+            'effective_date' => 'required|date',
+            'contact_email' => 'nullable|email|max:255',
+            'contact_phone' => 'nullable|string|max:255',
+            'contact_address' => 'nullable|string|max:1000',
+            'company_name' => 'nullable|string|max:255'
         ]);
 
         try {
@@ -494,7 +498,11 @@ class AdminController extends Controller
                 'version' => $request->input('version'),
                 'effective_date' => $request->input('effective_date'),
                 'is_active' => true,
-                'updated_by' => Auth::id()
+                'updated_by' => Auth::id(),
+                'contact_email' => $request->input('contact_email'),
+                'contact_phone' => $request->input('contact_phone'),
+                'contact_address' => $request->input('contact_address'),
+                'company_name' => $request->input('company_name')
             ]);
 
             // Clear any view/model cache to ensure immediate updates

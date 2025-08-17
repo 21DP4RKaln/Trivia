@@ -14,7 +14,11 @@ class TermsOfService extends Model
         'version',
         'effective_date',
         'is_active',
-        'updated_by'
+        'updated_by',
+        'contact_email',
+        'contact_phone',
+        'contact_address',
+        'company_name'
     ];
 
     protected $casts = [
@@ -43,7 +47,11 @@ class TermsOfService extends Model
                 'version' => '1.0',
                 'effective_date' => now()->format('F j, Y'),
                 'last_updated' => now()->format('F j, Y'),
-                'updated_by' => 'System'
+                'updated_by' => 'System',
+                'contact_email' => 'support@trivia.com',
+                'contact_phone' => null,
+                'contact_address' => 'Trivia Game',
+                'company_name' => 'Trivia Game'
             ];
         }
 
@@ -52,7 +60,11 @@ class TermsOfService extends Model
             'version' => $activeTerms->version,
             'effective_date' => $activeTerms->effective_date instanceof \Carbon\Carbon ? $activeTerms->effective_date->format('F j, Y') : $activeTerms->effective_date,
             'last_updated' => $activeTerms->updated_at->format('F j, Y'),
-            'updated_by' => $activeTerms->updatedBy->name ?? 'System'
+            'updated_by' => $activeTerms->updatedBy->name ?? 'System',
+            'contact_email' => $activeTerms->contact_email ?? 'support@trivia.com',
+            'contact_phone' => $activeTerms->contact_phone ?? null,
+            'contact_address' => $activeTerms->contact_address ?? 'Trivia Game',
+            'company_name' => $activeTerms->company_name ?? 'Trivia Game'
         ];
     }
 

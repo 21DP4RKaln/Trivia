@@ -23,8 +23,43 @@ class AdminTermsOfService {
     this.initializeAutosave();
     this.initializeKeyboardShortcuts();
     this.initializeAnimations();
+    this.initializeButtons();
 
     this.isInitialized = true;
+  }
+  
+  initializeButtons() {
+    // Preview button
+    const previewBtn = document.getElementById('preview-btn');
+    if (previewBtn) {
+      previewBtn.addEventListener('click', () => {
+        const previewTab = document.querySelector('[data-tab="preview"]');
+        if (previewTab) {
+          previewTab.click();
+        }
+      });
+    }
+    
+    // Reset button
+    const resetBtn = document.getElementById('reset-btn');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to reset to the current saved version? This will lose any unsaved changes.')) {
+          location.reload();
+        }
+      });
+    }
+    
+    // Back to editor button
+    const backToEditorBtn = document.getElementById('back-to-editor');
+    if (backToEditorBtn) {
+      backToEditorBtn.addEventListener('click', () => {
+        const editorTab = document.querySelector('[data-tab="editor"]');
+        if (editorTab) {
+          editorTab.click();
+        }
+      });
+    }
   }
 
   createBackground() {
@@ -89,6 +124,77 @@ class AdminTermsOfService {
       // Update preview if switching to preview tab
       if (targetTab === 'preview') {
         this.updatePreview();
+        this.updatePreviewMeta();
+        this.updateContactPreview();
+      }
+    }
+  }
+  
+  updatePreviewMeta() {
+    // Update preview version and date
+    const versionInput = document.getElementById('version');
+    const dateInput = document.getElementById('effective_date');
+    const previewVersion = document.getElementById('preview-version');
+    const previewDate = document.getElementById('preview-date');
+    
+    if (versionInput && previewVersion) {
+      previewVersion.textContent = versionInput.value || '1.0';
+    }
+    
+    if (dateInput && previewDate) {
+      const date = new Date(dateInput.value);
+      if (!isNaN(date.getTime())) {
+        previewDate.textContent = date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+      }
+    }
+    
+    // Update contact information preview
+    this.updateContactPreview();
+  }
+
+  updateContactPreview() {
+    const emailInput = document.getElementById('contact_email');
+    const phoneInput = document.getElementById('contact_phone');
+    const addressInput = document.getElementById('contact_address');
+    const companyInput = document.getElementById('company_name');
+    
+    const previewEmail = document.getElementById('preview-contact-email');
+    const previewPhone = document.getElementById('preview-contact-phone');
+    const previewPhoneItem = document.getElementById('preview-contact-phone-item');
+    const previewAddress = document.getElementById('preview-contact-address');
+    const previewCompany = document.getElementById('preview-company-name');
+    const previewCompanyItem = document.getElementById('preview-company-name-item');
+    
+    if (emailInput && previewEmail) {
+      previewEmail.textContent = emailInput.value || 'support@trivia.com';
+    }
+    
+    if (phoneInput && previewPhone && previewPhoneItem) {
+      if (phoneInput.value.trim()) {
+        previewPhone.textContent = phoneInput.value;
+        previewPhoneItem.style.display = 'list-item';
+      } else {
+        previewPhoneItem.style.display = 'none';
+      }
+    }
+    
+    if (addressInput && previewAddress) {
+      previewAddress.textContent = addressInput.value || 'Trivia Game';
+    }
+    
+    if (companyInput && previewCompany && previewCompanyItem) {
+      const companyValue = companyInput.value.trim();
+      const addressValue = addressInput ? addressInput.value.trim() : '';
+      
+      if (companyValue && companyValue !== addressValue) {
+        previewCompany.textContent = companyValue;
+        previewCompanyItem.style.display = 'list-item';
+      } else {
+        previewCompanyItem.style.display = 'none';
       }
     }
   }
@@ -103,13 +209,97 @@ class AdminTermsOfService {
       this.debounce(() => {
         if (this.currentTab === 'preview') {
           this.updatePreview();
+        } else {
+          // Update stats even when not in preview mode
+          this.updateEditorStats(textarea.value);
         }
         this.markAsModified();
       }, 500)
     );
 
+    // Initialize toolbar
+    this.initializeToolbar();
+
     // Add line numbers and better editing experience
     this.enhanceTextarea(textarea);
+    
+    // Initial stats update
+    this.updateEditorStats(textarea.value);
+    
+    // Add event listeners for contact fields
+    this.initializeContactFields();
+  }
+  
+  initializeToolbar() {
+    const toolbar = document.querySelector('.editor-toolbar');
+    if (!toolbar) return;
+    
+    toolbar.addEventListener('click', (e) => {
+      const btn = e.target.closest('.toolbar-btn');
+      if (!btn) return;
+      
+      e.preventDefault();
+      const action = btn.getAttribute('data-action');
+      this.executeToolbarAction(action);
+    });
+  }
+  
+  executeToolbarAction(action) {
+    const textarea = document.getElementById('content');
+    if (!textarea) return;
+    
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+    
+    let replacement = '';
+    let newCursorPos = start;
+    
+    switch (action) {
+      case 'bold':
+        replacement = `**${selectedText || 'bold text'}**`;
+        newCursorPos = selectedText ? end + 4 : start + 2;
+        break;
+      case 'italic':
+        replacement = `*${selectedText || 'italic text'}*`;
+        newCursorPos = selectedText ? end + 2 : start + 1;
+        break;
+      case 'h1':
+        replacement = `# ${selectedText || 'Heading 1'}`;
+        newCursorPos = selectedText ? end + 2 : start + 2;
+        break;
+      case 'h2':
+        replacement = `## ${selectedText || 'Heading 2'}`;
+        newCursorPos = selectedText ? end + 3 : start + 3;
+        break;
+      case 'h3':
+        replacement = `### ${selectedText || 'Heading 3'}`;
+        newCursorPos = selectedText ? end + 4 : start + 4;
+        break;
+      case 'ul':
+        replacement = `- ${selectedText || 'List item'}`;
+        newCursorPos = selectedText ? end + 2 : start + 2;
+        break;
+      case 'ol':
+        replacement = `1. ${selectedText || 'List item'}`;
+        newCursorPos = selectedText ? end + 3 : start + 3;
+        break;
+      case 'link':
+        replacement = `[${selectedText || 'link text'}](url)`;
+        newCursorPos = selectedText ? end + 3 : start + 1;
+        break;
+      case 'quote':
+        replacement = `> ${selectedText || 'Quote text'}`;
+        newCursorPos = selectedText ? end + 2 : start + 2;
+        break;
+    }
+    
+    if (replacement) {
+      textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+      textarea.focus();
+      textarea.dispatchEvent(new Event('input'));
+    }
   }
 
   enhanceTextarea(textarea) {
@@ -153,13 +343,40 @@ class AdminTermsOfService {
 
   updatePreview() {
     const content = document.getElementById('content')?.value || '';
-    const previewContainer = document.getElementById('preview-content');
+    const previewContainer = document.getElementById('preview-text');
 
     if (!previewContainer) return;
 
     // Convert markdown-like content to HTML
     const htmlContent = this.convertToHTML(content);
     previewContainer.innerHTML = htmlContent;
+    
+    // Update word and character counts in the editor stats
+    this.updateEditorStats(content);
+    
+    // Update contact information preview
+    this.updateContactPreview();
+  }
+  
+  updateEditorStats(content) {
+    const wordCountEl = document.getElementById('word-count');
+    const charCountEl = document.getElementById('char-count');
+    const readTimeEl = document.getElementById('read-time');
+    
+    if (wordCountEl) {
+      const words = content.trim().split(/\s+/).filter(word => word.length > 0).length;
+      wordCountEl.textContent = `${words} words`;
+    }
+    
+    if (charCountEl) {
+      charCountEl.textContent = `${content.length} characters`;
+    }
+    
+    if (readTimeEl) {
+      const words = content.trim().split(/\s+/).filter(word => word.length > 0).length;
+      const readTime = Math.max(1, Math.ceil(words / 250));
+      readTimeEl.textContent = `~${readTime} min read`;
+    }
   }
 
   convertToHTML(content) {
@@ -346,6 +563,22 @@ class AdminTermsOfService {
       clearTimeout(timeout);
       timeout = setTimeout(later, wait);
     };
+  }
+
+  initializeContactFields() {
+    const contactFields = ['contact_email', 'contact_phone', 'contact_address', 'company_name'];
+    
+    contactFields.forEach(fieldId => {
+      const field = document.getElementById(fieldId);
+      if (field) {
+        field.addEventListener('input', this.debounce(() => {
+          if (this.currentTab === 'preview') {
+            this.updateContactPreview();
+          }
+          this.markAsModified();
+        }, 300));
+      }
+    });
   }
 
   // Cleanup method

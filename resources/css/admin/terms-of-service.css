@@ -715,7 +715,75 @@
   margin-bottom: 0.5rem;
 }
 
-/* Responsive Design */
+/* Contact Information Section */
+.contact-section {
+  background: #1f1f1f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.contact-section h3 {
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contact-section h3 i {
+  color: #03af4b;
+}
+
+.section-description {
+  color: #9ca3af;
+  margin: 0 0 1.5rem 0;
+  font-size: 0.9rem;
+}
+
+.form-group-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Contact Information Preview */
+.contact-info-preview {
+  background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #667eea 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  margin-top: 2rem;
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+}
+
+.contact-info-preview h3 {
+  color: white;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.contact-list li {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.contact-list strong {
+  color: white;
+}
+
 @media (max-width: 768px) {
   .terms-header .header-content {
     flex-direction: column;

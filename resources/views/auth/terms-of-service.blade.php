@@ -62,53 +62,32 @@
                     @endauth
             @endif
         </div>          @if(isset($termsData) && !empty($termsData['content']) && $termsData['content'] !== 'null')
-            @php
-                $content = $termsData['content'];
-                $decodedContent = json_decode($content, true);
-            @endphp
-            
-            @if($decodedContent && is_array($decodedContent) && isset($decodedContent['sections']))
-                @foreach($decodedContent['sections'] as $index => $section)
-                    <div class="section">
-                        <h2 class="section-title">{{ $section['title'] ?? "Section " . ($index + 1) }}</h2>
-                        <div class="section-content">
-                            @if(isset($section['content']))
-                                <p>{{ $section['content'] }}</p>
-                            @endif
-                            
-                            @if(isset($section['list']) && is_array($section['list']))
-                                <ul class="list">
-                                    @foreach($section['list'] as $item)
-                                        <li>{{ $item }}</li>
-                                    @endforeach
-                                </ul>
-                            @endif
-                            
-                            @if(isset($section['subsections']) && is_array($section['subsections']))
-                                @foreach($section['subsections'] as $subsection)
-                                    <div class="subsection">
-                                        <h3 class="subsection-title">{{ $subsection['title'] ?? '' }}</h3>
-                                        <p>{{ $subsection['content'] ?? '' }}</p>
-                                    </div>
-                                @endforeach
-                            @endif
-                        </div>
-                    </div>
-                @endforeach
-            @else
-                {{-- Display content as HTML or as formatted text --}}
-                <div class="section">
-                    <div class="section-content">
-                        @if(strip_tags($content) != $content)
-                            {{-- Content has HTML tags, display as HTML --}}
-                            {!! $content !!}
-                        @else
-                            {{-- Content is plain text, convert line breaks --}}
-                            {!! nl2br(e($content)) !!}
-                        @endif
-                    </div>
+            <div class="section">
+                <div class="section-content">
+                    @if(strip_tags($termsData['content']) != $termsData['content'])
+                        {{-- Content has HTML tags, display as HTML --}}
+                        {!! nl2br($termsData['content']) !!}
+                    @else
+                        {{-- Content is plain text, convert line breaks and markdown-like formatting --}}
+                        @php
+                            $content = $termsData['content'];
+                            // Convert markdown-like formatting to HTML
+                            $content = preg_replace('/^# (.+)$/m', '<h1>$1</h1>', $content);
+                            $content = preg_replace('/^## (.+)$/m', '<h2 class="section-title">$1</h2>', $content);
+                            $content = preg_replace('/^### (.+)$/m', '<h3 class="subsection-title">$1</h3>', $content);
+                            $content = preg_replace('/\*\*(.+?)\*\*/', '<strong>$1</strong>', $content);
+                            $content = preg_replace('/\*(.+?)\*/', '<em>$1</em>', $content);
+                            $content = preg_replace('/^- (.+)$/m', '<li>$1</li>', $content);
+                            $content = preg_replace('/^> (.+)$/m', '<blockquote>$1</blockquote>', $content);
+                            $content = preg_replace('/\n---\n/', '<hr>', $content);
+                            // Wrap consecutive li tags in ul
+                            $content = preg_replace('/(<li>.*<\/li>)/s', '<ul class="list">$1</ul>', $content);
+                            $content = nl2br($content);
+                        @endphp
+                        {!! $content !!}
+                    @endif
                 </div>
-            @endif
+            </div>
         @else
             <div class="section">
                 <h2 class="section-title">1. Acceptance of Terms</h2>
@@ -160,11 +139,14 @@
             <h3><i class="fas fa-envelope"></i> Contact Information</h3>
             <p>If you have any questions about these Terms of Service, please contact us:</p>
             <ul class="list" style="color: white;">
-                <li><strong>Email:</strong> support@trivia.com</li>
-                <li><strong>Address:</strong> Trivia Game </li>
-                <!-- If you want to add a phone number, uncomment the line below
-                     <li><strong>Phone:</strong> Available through our support email</li> 
-                    -->
+                <li><strong>Email:</strong> {{ $termsData['contact_email'] ?? 'support@trivia.com' }}</li>
+                @if(!empty($termsData['contact_phone']))
+                    <li><strong>Phone:</strong> {{ $termsData['contact_phone'] }}</li>
+                @endif
+                <li><strong>Address:</strong> {{ $termsData['contact_address'] ?? 'Trivia Game' }}</li>
+                @if(!empty($termsData['company_name']) && $termsData['company_name'] !== $termsData['contact_address'])
+                    <li><strong>Company:</strong> {{ $termsData['company_name'] }}</li>
+                @endif
             </ul>
         </div>        <div class="effective-date">
             @if(isset($termsData))
