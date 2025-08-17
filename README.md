@@ -365,7 +365,7 @@ Start your trivia journey today and test your knowledge across various topics! W
 
 <div align="center">
 
-**Built with ❤️ using Laravel 12.x**
+**Built using Laravel 12.x**
 
 [Report Bug](https://github.com/your-username/trivia-game/issues) • [Request Feature](https://github.com/your-username/trivia-game/issues) • [Documentation](https://github.com/your-username/trivia-game/wiki)
 
