@@ -172,12 +172,10 @@ document.addEventListener('DOMContentLoaded', function () {
 function dismissUpdateBanner() {
   const banner = document.querySelector('.update-banner');
   if (banner) {
-    banner.style.transform = 'translateY(-20px) scale(0.95)';
-    banner.style.opacity = '0';
+    banner.style.animation = 'fadeOut 0.3s ease-out';
     setTimeout(() => {
-      banner.style.display = 'none';
-      localStorage.setItem('terms-update-dismissed', Date.now());
-    }, 400);
+      banner.remove();
+    }, 300);
   }
 }
 
@@ -287,3 +285,85 @@ function addScrollToTop() {
 
 // Initialize scroll to top
 document.addEventListener('DOMContentLoaded', addScrollToTop);
+
+// Auto-refresh functionality to check for updates
+let lastUpdateCheck = Date.now();
+let currentVersion = null;
+
+// Get current version from the page
+function getCurrentVersion() {
+  const versionElement = document.querySelector('.effective-date p:last-child');
+  if (versionElement) {
+    return versionElement.textContent.trim();
+  }
+  return null;
+}
+
+// Check for content updates
+function checkForUpdates() {
+  fetch('/terms-of-service/check-updates', {
+    method: 'GET',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      Accept: 'application/json',
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.hasUpdates || data.lastUpdated !== currentVersion) {
+        showUpdateNotification();
+      }
+    })
+    .catch(error => {
+      console.log('Update check failed:', error);
+    });
+}
+
+function showUpdateNotification() {
+  // Remove existing notification if any
+  const existingNotification = document.querySelector('.update-notification');
+  if (existingNotification) {
+    existingNotification.remove();
+  }
+
+  // Create update notification
+  const notification = document.createElement('div');
+  notification.className = 'update-notification';
+  notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-info-circle"></i>
+            <span>Terms of Service have been updated.</span>
+            <button onclick="location.reload()" class="refresh-btn">
+                <i class="fas fa-refresh"></i>
+                Refresh
+            </button>
+            <button onclick="this.parentElement.parentElement.remove()" class="close-btn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+
+  document.body.appendChild(notification);
+
+  // Auto-hide after 15 seconds
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.remove();
+    }
+  }, 15000);
+}
+
+// Initialize update checking when page loads
+document.addEventListener('DOMContentLoaded', function () {
+  currentVersion = getCurrentVersion();
+
+  // Check for updates every 30 seconds
+  setInterval(checkForUpdates, 30000);
+
+  // Also check when page becomes visible again (user returns to tab)
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) {
+      checkForUpdates();
+    }
+  });
+});

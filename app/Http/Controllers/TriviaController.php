@@ -22,9 +22,21 @@ class TriviaController extends Controller
     /**
      * Show the game start page
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('trivia.index');
+        // Check for saved game
+        $savedGame = null;
+        $gameToken = $request->cookie('trivia_game_token');
+        
+        if ($gameToken) {
+            $savedGame = GameSession::findActiveGameByToken($gameToken);
+            if (!$savedGame) {
+                // Clear invalid cookie
+                cookie()->queue(cookie()->forget('trivia_game_token'));
+            }
+        }
+        
+        return view('trivia.index', compact('savedGame'));
     }
     
     /**
@@ -34,18 +46,36 @@ class TriviaController extends Controller
     {
         $startTime = Carbon::now();
         $gameSession = null;
+        $sessionToken = GameSession::generateSessionToken();
         
+        // Create game session for both authenticated users and guests
         if (Auth::check()) {
             $gameSession = GameSession::create([
                 'user_id' => Auth::id(),
+                'session_token' => $sessionToken,
                 'start_time' => $startTime,
                 'total_questions' => 0,
                 'correct_answers' => 0,
-                'completed' => false
+                'completed' => false,
+                'expires_at' => now()->addHours(24)
+            ]);
+        } else {
+            // Create a guest identifier using session ID or generate a unique one
+            $guestIdentifier = $request->session()->getId() ?: 'guest_' . uniqid();
+            
+            $gameSession = GameSession::create([
+                'user_id' => null,
+                'guest_identifier' => $guestIdentifier,
+                'session_token' => $sessionToken,
+                'start_time' => $startTime,
+                'total_questions' => 0,
+                'correct_answers' => 0,
+                'completed' => false,
+                'expires_at' => now()->addHours(24)
             ]);
         }
         
-        $request->session()->put('trivia', [
+        $gameState = [
             'current_question' => 1,
             'correct_answers' => 0,
             'used_questions' => [],
@@ -53,12 +83,45 @@ class TriviaController extends Controller
             'last_question' => null,
             'last_correct_answer' => null,
             'start_time' => $startTime,
-            'game_session_id' => $gameSession?->id
-        ]);
+            'game_session_id' => $gameSession->id
+        ];
+        
+        $request->session()->put('trivia', $gameState);
+        
+        // Save game state to database for persistence
+        $gameSession->saveGameState($gameState);
+        
+        // Set cookie with game token (expires in 24 hours)
+        cookie()->queue('trivia_game_token', $sessionToken, 24 * 60);
         
         return $this->nextQuestion($request);
     }
     
+    /**
+     * Continue a saved game
+     */
+    public function continueGame(Request $request)
+    {
+        $gameToken = $request->cookie('trivia_game_token');
+        
+        if (!$gameToken) {
+            return redirect()->route('trivia.index')->with('error', 'No saved game found.');
+        }
+        
+        $savedGame = GameSession::findActiveGameByToken($gameToken);
+        
+        if (!$savedGame || !$savedGame->game_state) {
+            cookie()->queue(cookie()->forget('trivia_game_token'));
+            return redirect()->route('trivia.index')->with('error', 'Saved game is no longer available.');
+        }
+        
+        // Restore game state with proper datetime conversion
+        $gameState = $savedGame->getRestoredGameState();
+        $request->session()->put('trivia', $gameState);
+        
+        return $this->nextQuestion($request);
+    }
+
     /**
      * Get the next question
      */
@@ -74,18 +137,32 @@ class TriviaController extends Controller
             $gameState['gameplay_start_time'] = Carbon::now();
         }
         
-        $questionData = $this->triviaService->getTriviaQuestion($gameState['used_questions']);
-        
-        if (!$questionData) {
-            $questionData = $this->triviaService->getFallbackQuestionAvoidingRepeats($gameState['used_questions']);
+        // Check if we already have a current question (from page reload or restored game)
+        if (!isset($gameState['current_question_data'])) {
+            $questionData = $this->triviaService->getTriviaQuestion($gameState['used_questions']);
+            
+            if (!$questionData) {
+                $questionData = $this->triviaService->getFallbackQuestionAvoidingRepeats($gameState['used_questions']);
+            }
+            
+            if (isset($questionData['used_number'])) {
+                $gameState['used_questions'][] = $questionData['used_number'];
+            }
+            
+            $gameState['current_question_data'] = $questionData;
+            $request->session()->put('trivia', $gameState);
+            
+            // Save game state for persistence
+            if (isset($gameState['game_session_id'])) {
+                $gameSession = GameSession::find($gameState['game_session_id']);
+                if ($gameSession && !$gameSession->completed) {
+                    $gameSession->saveGameState($gameState);
+                }
+            }
+        } else {
+            // Use existing question data
+            $questionData = $gameState['current_question_data'];
         }
-        
-        if (isset($questionData['used_number'])) {
-            $gameState['used_questions'][] = $questionData['used_number'];
-        }
-        
-        $gameState['current_question_data'] = $questionData;
-        $request->session()->put('trivia', $gameState);
         
         $isAdmin = false;
         if (Auth::check()) {
@@ -138,7 +215,17 @@ class TriviaController extends Controller
             }
             
             $gameState['current_question']++;
+            // Clear current question data so a new question is generated
+            unset($gameState['current_question_data']);
             $request->session()->put('trivia', $gameState);
+            
+            // Save game state for persistence
+            if (isset($gameState['game_session_id'])) {
+                $gameSession = GameSession::find($gameState['game_session_id']);
+                if ($gameSession && !$gameSession->completed) {
+                    $gameSession->saveGameState($gameState);
+                }
+            }
             
             return view('trivia.correct', [
                 'correct_answers' => $gameState['correct_answers'],
@@ -190,7 +277,8 @@ class TriviaController extends Controller
      */
     private function updateGameSession(array $gameState, bool $won)
     {
-        if (!Auth::check() || !isset($gameState['game_session_id'])) {
+        // Update game session for both authenticated users and guests
+        if (!isset($gameState['game_session_id'])) {
             return;
         }
         
@@ -203,8 +291,13 @@ class TriviaController extends Controller
             'total_questions' => 20, 
             'correct_answers' => $gameState['correct_answers'],
             'duration_seconds' => 0, 
-            'completed' => true
+            'completed' => true,
+            'game_state' => null, 
+            'expires_at' => null  
         ]);
+        
+        // Clear the game token cookie since game is completed
+        cookie()->queue(cookie()->forget('trivia_game_token'));
     }
     
     /**
@@ -216,10 +309,6 @@ class TriviaController extends Controller
             'duration' => 'required|integer|min:0',
             'question_times' => 'sometimes|array'
         ]);
-
-        if (!Auth::check()) {
-            return response()->json(['success' => false, 'message' => 'Not authenticated']);
-        }
 
         $gameState = $request->session()->get('trivia');
         if (!$gameState || !isset($gameState['game_session_id'])) {
@@ -237,6 +326,7 @@ class TriviaController extends Controller
         // Log for debugging
         \Log::info('Updating game duration', [
             'game_session_id' => $gameSession->id,
+            'is_guest' => $gameSession->isGuest(),
             'old_duration' => $gameSession->duration_seconds,
             'new_duration' => $duration,
             'question_times_count' => count($questionTimes)
@@ -260,5 +350,32 @@ class TriviaController extends Controller
             'duration' => $duration,
             'formatted' => $gameSession->fresh()->duration
         ]);
+    }
+
+    /**
+     * Abandon/Delete a saved game
+     */
+    public function abandonGame(Request $request)
+    {
+        $gameToken = $request->cookie('trivia_game_token');
+        
+        if ($gameToken) {
+            $savedGame = GameSession::findActiveGameByToken($gameToken);
+            if ($savedGame) {
+                $savedGame->update([
+                    'game_state' => null,
+                    'expires_at' => null,
+                    'completed' => true
+                ]);
+            }
+        }
+        
+        // Clear the cookie
+        cookie()->queue(cookie()->forget('trivia_game_token'));
+        
+        // Clear session
+        $request->session()->forget('trivia');
+        
+        return redirect()->route('trivia.index')->with('success', 'Saved game has been abandoned. You can start a new game now.');
     }
 }

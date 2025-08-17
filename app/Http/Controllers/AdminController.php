@@ -9,6 +9,7 @@ use App\Models\TermsOfService;
 use App\Services\TriviaService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -269,8 +270,9 @@ class AdminController extends Controller
             $recentGamesList = $recentGameQuery->limit(10)->get();
         }
 
-        // User performance stats
+        // User performance stats (only for registered users)
         $userStats = GameSession::where('completed', true)
+            ->whereNotNull('user_id')
             ->join('users', 'game_sessions.user_id', '=', 'users.id')
             ->selectRaw('
                 users.id,
@@ -286,6 +288,19 @@ class AdminController extends Controller
             ->groupBy('users.id', 'users.name', 'users.email')
             ->orderBy('games_played', 'desc')
             ->get();
+
+        // Guest games statistics
+        $guestStats = GameSession::where('completed', true)
+            ->whereNull('user_id')
+            ->selectRaw('
+                COUNT(*) as total_games,
+                AVG(correct_answers) as avg_score,
+                MAX(correct_answers) as best_score,
+                AVG(accuracy) as avg_accuracy,
+                AVG(duration_seconds) as avg_duration,
+                SUM(CASE WHEN correct_answers = 20 THEN 1 ELSE 0 END) as perfect_games
+            ')
+            ->first();
 
         // Score distribution
         $scoreDistribution = GameSession::where('completed', true)
@@ -311,9 +326,15 @@ class AdminController extends Controller
         // Search functionality
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->whereHas('user', function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+            $query->where(function($q) use ($search) {
+                $q->whereHas('user', function($userQuery) use ($search) {
+                    $userQuery->where('name', 'like', "%{$search}%")
+                             ->orWhere('email', 'like', "%{$search}%");
+                })->orWhere(function($guestQuery) use ($search) {
+                    // For guest games, search in guest identifier
+                    $guestQuery->whereNull('user_id')
+                              ->where('guest_identifier', 'like', "%{$search}%");
+                });
             });
         }
 
@@ -359,7 +380,7 @@ class AdminController extends Controller
             ->get();
 
         return view('admin.statistics', compact(
-            'stats', 'recentGamesList', 'userStats', 'scoreDistribution', 
+            'stats', 'recentGamesList', 'userStats', 'guestStats', 'scoreDistribution', 
             'allGames', 'recentGames'
         ));
     }
@@ -463,19 +484,31 @@ class AdminController extends Controller
             'effective_date' => 'required|date'
         ]);
 
-        // Deactivate all previous terms
-        TermsOfService::where('is_active', true)->update(['is_active' => false]);
+        try {
+            // Deactivate all previous terms
+            TermsOfService::where('is_active', true)->update(['is_active' => false]);
 
-        // Create new terms
-        TermsOfService::create([
-            'content' => $request->content,
-            'version' => $request->version,
-            'effective_date' => $request->effective_date,
-            'is_active' => true,
-            'updated_by' => Auth::id()
-        ]);
+            // Create new terms
+            $newTerms = TermsOfService::create([
+                'content' => $request->input('content'),
+                'version' => $request->input('version'),
+                'effective_date' => $request->input('effective_date'),
+                'is_active' => true,
+                'updated_by' => Auth::id()
+            ]);
 
-        return redirect()->back()->with('success', 'Terms of Service updated successfully!');
+            // Clear any view/model cache to ensure immediate updates
+            if (function_exists('cache')) {
+                \Illuminate\Support\Facades\Cache::flush();
+            }
+
+            // Set a flag that terms were updated for notification purposes
+            \Illuminate\Support\Facades\Cache::put('terms_updated_at', now()->timestamp, 3600); // Store for 1 hour
+
+            return redirect()->back()->with('success', 'Terms of Service updated successfully! Changes are now live.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update Terms of Service: ' . $e->getMessage());
+        }
     }
 
     /**

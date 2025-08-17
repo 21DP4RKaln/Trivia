@@ -13,6 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'saved-game' => \App\Http\Middleware\CheckSavedGame::class,
+        ]);
+        
+        // Apply CheckSavedGame middleware to web routes
+        $middleware->web(append: [
+            \App\Http\Middleware\CheckSavedGame::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

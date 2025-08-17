@@ -7,6 +7,8 @@
     <link rel="icon" href="{{ asset('image/logo.png') }}" type="image/png">
     @vite(['resources/scss/app.scss', 'resources/scss/admin/admin.scss', 'resources/scss/admin/admin-statistics.scss', 'resources/scss/admin/admin-questions.scss', 'resources/scss/admin/terms-of-service.scss', 'resources/css/admin/admin-users.css', 'resources/css/admin/admin-dashboard.css', 'resources/css/admin/admin-statistics.css', 'resources/css/admin/admin-questions.css', 'resources/css/admin/terms-of-service.css', 'resources/css/pagination.css', 'resources/js/app.js', 'resources/js/admin/admin-users.js', 'resources/js/admin/admin-dashboard.js', 'resources/js/admin/admin-questions.js', 'resources/js/admin/terms-of-service.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/loader.css') }}">
+    @stack('styles')
     
     <!-- Additional styling to ensure buttons are visible -->
     <style>
@@ -237,6 +239,15 @@
         });
     </script>
 
+    <!-- Global Loader Overlay for Admin -->
+    <x-loader 
+        overlay="true" 
+        id="admin-loader-overlay" 
+        size="medium"
+        class="loader-hidden"
+    />
+
+    <script src="{{ asset('js/loader.js') }}"></script>
     @stack('scripts')
 </body>
 </html>

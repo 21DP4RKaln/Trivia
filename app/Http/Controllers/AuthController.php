@@ -144,7 +144,44 @@ class AuthController
 
     public function showTermsOfService(): View
     {
+        // Clear any cached data to ensure we get the latest terms
+        \Illuminate\Support\Facades\Cache::forget('terms_of_service_active');
+        
         $termsData = TermsOfService::getCurrentContent();
+        
         return view('auth.terms-of-service', compact('termsData'));
+    }
+
+    public function checkTermsUpdates(): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $currentTerms = TermsOfService::getActive();
+            
+            if (!$currentTerms) {
+                return response()->json([
+                    'hasUpdates' => false,
+                    'lastUpdated' => null
+                ]);
+            }
+
+            $lastUpdated = $currentTerms->updated_at->format('F j, Y');
+            $termsUpdatedAt = \Illuminate\Support\Facades\Cache::get('terms_updated_at');
+            
+            // Check if there was a recent update (within last hour)
+            $hasRecentUpdate = $termsUpdatedAt && (now()->timestamp - $termsUpdatedAt) < 3600;
+            
+            return response()->json([
+                'hasUpdates' => $hasRecentUpdate,
+                'lastUpdated' => $lastUpdated,
+                'version' => $currentTerms->version,
+                'timestamp' => $currentTerms->updated_at->timestamp,
+                'updateTime' => $termsUpdatedAt
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'hasUpdates' => false,
+                'error' => 'Failed to check for updates'
+            ], 500);
+        }
     }
 }

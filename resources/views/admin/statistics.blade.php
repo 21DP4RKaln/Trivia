@@ -184,6 +184,87 @@
                 </div>
             </div>
         </div>
+
+        <!-- Guest Games Statistics -->
+        @if($guestStats && $guestStats->total_games > 0)
+            <div class="analytics-card guest-stats-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-user-secret"></i>
+                        Guest Player Statistics
+                    </h3>
+                    <div class="card-subtitle">Performance metrics for anonymous players</div>
+                </div>
+                <div class="card-content">
+                    <div class="guest-stats-grid">
+                        <div class="guest-stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-gamepad"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">{{ number_format($guestStats->total_games) }}</div>
+                                <div class="stat-label">Total Games</div>
+                            </div>
+                        </div>
+                        
+                        <div class="guest-stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">{{ number_format($guestStats->avg_score, 1) }}</div>
+                                <div class="stat-label">Average Score</div>
+                            </div>
+                        </div>
+                        
+                        <div class="guest-stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">{{ $guestStats->best_score }}/20</div>
+                                <div class="stat-label">Best Score</div>
+                            </div>
+                        </div>
+                        
+                        <div class="guest-stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">{{ number_format($guestStats->avg_accuracy, 1) }}%</div>
+                                <div class="stat-label">Average Accuracy</div>
+                            </div>
+                        </div>
+                        
+                        <div class="guest-stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">{{ gmdate('i:s', $guestStats->avg_duration ?? 0) }}</div>
+                                <div class="stat-label">Average Duration</div>
+                            </div>
+                        </div>
+                        
+                        <div class="guest-stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">{{ $guestStats->perfect_games }}</div>
+                                <div class="stat-label">Perfect Games</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="guest-note">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Guest games are tracked but not linked to user accounts. Encourage users to register to save their progress!</span>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 
     <!-- Recent Activity Feed -->
@@ -336,12 +417,12 @@
                                 <tr class="game-row" style="animation-delay: {{ $index * 0.02 }}s">
                                     <td class="player-cell">
                                         <div class="player-info">
-                                            <div class="player-avatar">
-                                                {{ strtoupper(substr($game->user->name ?? 'G', 0, 1)) }}
+                                            <div class="player-avatar {{ $game->user ? '' : 'guest-avatar' }}">
+                                                {{ strtoupper(substr($game->user ? $game->user->name : 'Guest Player', 0, 1)) }}
                                             </div>
                                             <div class="player-details">
                                                 <div class="player-name">{{ $game->user->name ?? 'Guest Player' }}</div>
-                                                <div class="player-email">{{ $game->user->email ?? 'No email' }}</div>
+                                                <div class="player-email">{{ $game->user->email ?? ($game->guest_identifier ? 'Guest ID: ' . substr($game->guest_identifier, -8) : 'Anonymous') }}</div>
                                             </div>
                                         </div>
                                     </td>

@@ -20,6 +20,7 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 
 // Terms of Service
 Route::get('/terms-of-service', [AuthController::class, 'showTermsOfService'])->name('terms.service');
+Route::get('/terms-of-service/check-updates', [AuthController::class, 'checkTermsUpdates'])->name('terms.check-updates');
 
 // Dashboard
 Route::get('/dashboard', [AuthController::class, 'dashboard'])->middleware('auth')->name('dashboard');
@@ -41,7 +42,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
 // Trivia game routes
 Route::get('/', [TriviaController::class, 'index'])->name('trivia.index');
+Route::get('/loader-demo', function () {
+    return view('trivia.loader-demo');
+})->name('trivia.loader-demo');
 Route::post('/start', [TriviaController::class, 'start'])->name('trivia.start');
+Route::post('/continue', [TriviaController::class, 'continueGame'])->name('trivia.continue');
+Route::post('/abandon', [TriviaController::class, 'abandonGame'])->name('trivia.abandon');
 Route::get('/question', [TriviaController::class, 'nextQuestion'])->name('trivia.question');
 Route::post('/answer', [TriviaController::class, 'submitAnswer'])->name('trivia.answer');
 Route::post('/update-duration', [TriviaController::class, 'updateDuration'])->name('trivia.update-duration');

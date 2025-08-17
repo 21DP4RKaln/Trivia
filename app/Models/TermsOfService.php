@@ -18,7 +18,7 @@ class TermsOfService extends Model
     ];
 
     protected $casts = [
-        'effective_date' => 'date',
+        'effective_date' => 'datetime',
         'is_active' => 'boolean'
     ];
 
@@ -29,7 +29,7 @@ class TermsOfService extends Model
 
     public static function getActive()
     {
-        return static::where('is_active', true)->latest()->first();
+        return static::where('is_active', true)->latest('created_at')->first();
     }
 
     public static function getCurrentContent()

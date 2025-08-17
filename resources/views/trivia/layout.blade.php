@@ -7,6 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/scss/app.scss', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/loader.css') }}">
+    @stack('styles')
     <style>
         .option.selected {
             background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)) !important;
@@ -14,6 +16,43 @@
             border-color: var(--gradient-start) !important;
             animation: pulse 0.5s ease-in-out;
             box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+        }
+        
+        .keyboard-hints {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .hint-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .hint-text i {
+            color: var(--gradient-start);
+            font-size: 1rem;
+        }
+        
+        kbd {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-family: 'Courier New', monospace;
         }
         
         .btn:disabled {
@@ -38,6 +77,23 @@
             .container {
                 box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), 
                            0 0 0 1px rgba(255, 255, 255, 0.1);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .keyboard-hints {
+                margin-bottom: 1.5rem;
+                padding: 0.75rem 1rem;
+            }
+            
+            .hint-text {
+                font-size: 0.8rem;
+                gap: 0.25rem;
+            }
+            
+            kbd {
+                padding: 0.2rem 0.4rem;
+                font-size: 0.7rem;
             }
         }
     </style>
@@ -70,6 +126,16 @@
         @yield('content')
     </div>
     
+    <!-- Global Loader Overlay -->
+    <x-loader 
+        overlay="true" 
+        id="app-loader-overlay" 
+        size="medium"
+        class="loader-hidden"
+    />
+
+    <script src="{{ asset('js/loader.js') }}"></script>
+    @stack('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const options = document.querySelectorAll('.option');

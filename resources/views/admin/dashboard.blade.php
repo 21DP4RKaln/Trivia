@@ -120,7 +120,7 @@
                             <div class="game-player">
                                 <div class="player-info">
                                     <div class="player-name">{{ $game->user->name ?? 'Guest Player' }}</div>
-                                    <div class="game-time">{{ $game->created_at->diffForHumans() }}</div>
+                                    <div class="game-time">{{ $game->updated_at->diffForHumans() }}</div>
                                 </div>
                             </div>
                             <div class="game-stats">

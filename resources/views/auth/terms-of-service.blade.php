@@ -61,47 +61,51 @@
                         @endif
                     @endauth
             @endif
-        </div>        
-        @if(isset($termsData) && !empty($termsData['content']) && $termsData['content'] !== 'null')
+        </div>          @if(isset($termsData) && !empty($termsData['content']) && $termsData['content'] !== 'null')
             @php
                 $content = $termsData['content'];
                 $decodedContent = json_decode($content, true);
             @endphp
             
-            @if($decodedContent && is_array($decodedContent))
-                @if(isset($decodedContent['sections']))
-                    @foreach($decodedContent['sections'] as $index => $section)
-                        <div class="section">
-                            <h2 class="section-title">{{ $section['title'] ?? "Section " . ($index + 1) }}</h2>
-                            <div class="section-content">
-                                @if(isset($section['content']))
-                                    <p>{{ $section['content'] }}</p>
-                                @endif
-                                
-                                @if(isset($section['list']) && is_array($section['list']))
-                                    <ul class="list">
-                                        @foreach($section['list'] as $item)
-                                            <li>{{ $item }}</li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-                                
-                                @if(isset($section['subsections']) && is_array($section['subsections']))
-                                    @foreach($section['subsections'] as $subsection)
-                                        <div class="subsection">
-                                            <h3 class="subsection-title">{{ $subsection['title'] ?? '' }}</h3>
-                                            <p>{{ $subsection['content'] ?? '' }}</p>
-                                        </div>
+            @if($decodedContent && is_array($decodedContent) && isset($decodedContent['sections']))
+                @foreach($decodedContent['sections'] as $index => $section)
+                    <div class="section">
+                        <h2 class="section-title">{{ $section['title'] ?? "Section " . ($index + 1) }}</h2>
+                        <div class="section-content">
+                            @if(isset($section['content']))
+                                <p>{{ $section['content'] }}</p>
+                            @endif
+                            
+                            @if(isset($section['list']) && is_array($section['list']))
+                                <ul class="list">
+                                    @foreach($section['list'] as $item)
+                                        <li>{{ $item }}</li>
                                     @endforeach
-                                @endif
-                            </div>
+                                </ul>
+                            @endif
+                            
+                            @if(isset($section['subsections']) && is_array($section['subsections']))
+                                @foreach($section['subsections'] as $subsection)
+                                    <div class="subsection">
+                                        <h3 class="subsection-title">{{ $subsection['title'] ?? '' }}</h3>
+                                        <p>{{ $subsection['content'] ?? '' }}</p>
+                                    </div>
+                                @endforeach
+                            @endif
                         </div>
-                    @endforeach
-                @endif
+                    </div>
+                @endforeach
             @else
+                {{-- Display content as HTML or as formatted text --}}
                 <div class="section">
                     <div class="section-content">
-                        {!! nl2br(e($content)) !!}
+                        @if(strip_tags($content) != $content)
+                            {{-- Content has HTML tags, display as HTML --}}
+                            {!! $content !!}
+                        @else
+                            {{-- Content is plain text, convert line breaks --}}
+                            {!! nl2br(e($content)) !!}
+                        @endif
                     </div>
                 </div>
             @endif
@@ -156,9 +160,11 @@
             <h3><i class="fas fa-envelope"></i> Contact Information</h3>
             <p>If you have any questions about these Terms of Service, please contact us:</p>
             <ul class="list" style="color: white;">
-                <li><strong>Email:</strong> support@numbertrivia.com</li>
-                <li><strong>Address:</strong> Number Trivia Game Platform</li>
-                <li><strong>Phone:</strong> Available through our support email</li>
+                <li><strong>Email:</strong> support@trivia.com</li>
+                <li><strong>Address:</strong> Trivia Game </li>
+                <!-- If you want to add a phone number, uncomment the line below
+                     <li><strong>Phone:</strong> Available through our support email</li> 
+                    -->
             </ul>
         </div>        <div class="effective-date">
             @if(isset($termsData))
@@ -168,7 +174,7 @@
                 <p><strong>Effective Date:</strong> Error</p>
                 <p><strong>Last Updated:</strong> Error</p>
             @endif
-        </div>    </div>
+        </div></div>
 </body>
 </html>
 </body>

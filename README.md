@@ -81,6 +81,25 @@ Visit `http://localhost:8000` to access the application.
 4. **View Results**: See your final score and game statistics
 5. **Dashboard**: Track your progress and view game history
 
+### Game Persistence Features
+
+The game now includes automatic save functionality:
+
+- **Automatic Save**: Games are automatically saved after each question
+- **Continue Game**: If you leave or reload the page, you can continue from where you left off
+- **24-Hour Expiry**: Saved games expire after 24 hours for security and storage management
+- **Cookie-Based**: Uses secure cookies and tokens to identify your saved game
+- **Cross-Session**: Works even if you close and reopen your browser
+- **Guest Support**: Both registered users and guests can save games
+
+**How to use:**
+
+- Start a game and answer some questions
+- Close your browser or navigate away
+- Return to the homepage - you'll see a "Continue Saved Game" option
+- Click "Continue" to resume from your last question
+- Or choose "Start New Game" or "Abandon Game" if you prefer
+
 ### Admin Functions
 
 1. **Become Admin**
@@ -93,6 +112,24 @@ Visit `http://localhost:8000` to access the application.
 3. **Manage Users**: View all users and grant/revoke admin privileges
 4. **View Statistics**: Analyze game data and user engagement
 5. **Test Games**: Play with correct answers visible for testing
+
+### Maintenance Commands
+
+The application includes several useful commands for game management:
+
+```bash
+# Clean up expired saved games (runs automatically daily)
+php artisan trivia:clean-expired-games
+
+# Clear all game sessions for testing
+php artisan trivia:clear-sessions
+
+# Clear sessions for a specific user
+php artisan trivia:clear-sessions --user=email@example.com
+
+# Make a user an admin
+php artisan user:make-admin email@example.com
+```
 
 ## Technical Details
 
@@ -130,10 +167,11 @@ users (
     id, name, email, password, is_admin, timestamps
 )
 
--- Game sessions
+-- Game sessions (with persistence support)
 game_sessions (
-    id, user_id, score, total_questions, duration,
-    completed_at, used_questions, gameplay_start_time, timestamps
+    id, user_id, guest_identifier, session_token, game_state, expires_at,
+    total_questions, correct_answers, accuracy, start_time, end_time,
+    duration_seconds, question_times, completed, timestamps
 )
 ```
 

@@ -13,6 +13,10 @@ class GameSession extends Model
 
     protected $fillable = [
         'user_id',
+        'guest_identifier',
+        'session_token',
+        'game_state',
+        'expires_at',
         'total_questions',
         'correct_answers',
         'accuracy',
@@ -26,13 +30,39 @@ class GameSession extends Model
     protected $casts = [
         'start_time' => 'datetime',
         'end_time' => 'datetime',
+        'expires_at' => 'datetime',
         'question_times' => 'array',
+        'game_state' => 'array',
         'completed' => 'boolean'
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+    
+    /**
+     * Check if this is a guest game session
+     */
+    public function isGuest(): bool
+    {
+        return $this->user_id === null;
+    }
+    
+    /**
+     * Get the player name (user name or "Guest Player")
+     */
+    public function getPlayerNameAttribute(): string
+    {
+        return $this->user ? $this->user->name : 'Guest Player';
+    }
+    
+    /**
+     * Get the player email (user email or null for guests)
+     */
+    public function getPlayerEmailAttribute(): ?string
+    {
+        return $this->user ? $this->user->email : null;
     }
     
     public function getDurationAttribute(): string
@@ -125,5 +155,84 @@ class GameSession extends Model
         }
 
         return ['fast' => $fast, 'medium' => $medium, 'slow' => $slow];
+    }
+
+    /**
+     * Check if this game session is active and not expired
+     */
+    public function isActive(): bool
+    {
+        return !$this->completed && 
+               $this->expires_at && 
+               $this->expires_at->isFuture();
+    }
+    
+    /**
+     * Generate a unique session token for game persistence
+     */
+    public static function generateSessionToken(): string
+    {
+        return bin2hex(random_bytes(32));
+    }
+    
+    /**
+     * Find an active saved game by session token
+     */
+    public static function findActiveGameByToken(string $token): ?self
+    {
+        return self::where('session_token', $token)
+                   ->where('completed', false)
+                   ->where('expires_at', '>', now())
+                   ->first();
+    }
+    
+    /**
+     * Save the current game state
+     */
+    public function saveGameState(array $gameState): bool
+    {
+        // Convert Carbon instances to strings for JSON storage
+        if (isset($gameState['start_time']) && $gameState['start_time'] instanceof \Carbon\Carbon) {
+            $gameState['start_time'] = $gameState['start_time']->toISOString();
+        }
+        if (isset($gameState['gameplay_start_time']) && $gameState['gameplay_start_time'] instanceof \Carbon\Carbon) {
+            $gameState['gameplay_start_time'] = $gameState['gameplay_start_time']->toISOString();
+        }
+        
+        $this->game_state = $gameState;
+        $this->expires_at = now()->addHours(24); // Game saves expire after 24 hours
+        return $this->save();
+    }
+    
+    /**
+     * Get the restored game state with proper datetime conversion
+     */
+    public function getRestoredGameState(): ?array
+    {
+        if (!$this->game_state) {
+            return null;
+        }
+        
+        $gameState = $this->game_state;
+        
+        // Convert datetime strings back to Carbon instances
+        if (isset($gameState['start_time']) && is_string($gameState['start_time'])) {
+            $gameState['start_time'] = \Carbon\Carbon::parse($gameState['start_time']);
+        }
+        if (isset($gameState['gameplay_start_time']) && is_string($gameState['gameplay_start_time'])) {
+            $gameState['gameplay_start_time'] = \Carbon\Carbon::parse($gameState['gameplay_start_time']);
+        }
+        
+        return $gameState;
+    }
+
+    /**
+     * Clear expired game sessions
+     */
+    public static function clearExpiredGames(): int
+    {
+        return self::where('completed', false)
+                   ->where('expires_at', '<', now())
+                   ->delete();
     }
 }

@@ -8,7 +8,6 @@ $text-primary: #f9fafb;
 $text-secondary: #d1d5db;
 $text-muted: #9ca3af;
 
-// Mixins
 @mixin glassmorphism($opacity: 0.95) {
   background: rgba(30, 30, 30, $opacity);
   backdrop-filter: blur(25px);
@@ -31,7 +30,6 @@ $text-muted: #9ca3af;
   }
 }
 
-// Base styles
 * {
   margin: 0;
   padding: 0;
@@ -46,7 +44,6 @@ body {
     'Segoe UI',
     Roboto,
     sans-serif;
-  background: $primary-bg;
   min-height: 100vh;
   padding: 1rem;
   position: relative;
@@ -54,7 +51,6 @@ body {
   color: $text-primary;
 }
 
-// Container
 .terms-container {
   max-width: 900px;
   margin: 2rem auto;
@@ -124,7 +120,6 @@ body {
   opacity: 0.9;
 }
 
-// Sections
 .section {
   margin-bottom: 3.5rem;
   opacity: 0;
@@ -341,7 +336,6 @@ body {
   }
 }
 
-// Buttons
 .back-button {
   position: fixed;
   top: 2rem;
@@ -385,7 +379,6 @@ body {
   }
 }
 
-// Responsive design
 @media (max-width: 768px) {
   .terms-container {
     margin: 1rem;
