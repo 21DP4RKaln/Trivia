@@ -281,11 +281,6 @@
                 <div class="activity-feed">
                     @foreach($recentGames as $index => $game)
                         <div class="activity-item" style="animation-delay: {{ $index * 0.05 }}s">
-                            <div class="activity-avatar">
-                                <div class="avatar-circle">
-                                    {{ strtoupper(substr($game->user->name ?? 'G', 0, 1)) }}
-                                </div>
-                            </div>
                             <div class="activity-content">
                                 <div class="activity-main">
                                     <div class="activity-header">
@@ -417,9 +412,6 @@
                                 <tr class="game-row" style="animation-delay: {{ $index * 0.02 }}s">
                                     <td class="player-cell">
                                         <div class="player-info">
-                                            <div class="player-avatar {{ $game->user ? '' : 'guest-avatar' }}">
-                                                {{ strtoupper(substr($game->user ? $game->user->name : 'Guest Player', 0, 1)) }}
-                                            </div>
                                             <div class="player-details">
                                                 <div class="player-name">{{ $game->user->name ?? 'Guest Player' }}</div>
                                                 <div class="player-email">{{ $game->user->email ?? ($game->guest_identifier ? 'Guest ID: ' . substr($game->guest_identifier, -8) : 'Anonymous') }}</div>

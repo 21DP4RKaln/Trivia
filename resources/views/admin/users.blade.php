@@ -65,16 +65,15 @@
 <div class="table-section">
     @if($users->count() > 0)
         <div class="table-wrapper">
-            <table class="users-table">
+            <table class="users-table compact-table">
                 <thead>
                     <tr>
-                        <th>User</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Registration</th>
-                        <th>Games Stats</th>
-                        <th>Actions</th>
+                        <th class="user-col">User</th>
+                        <th class="role-col">Role</th>
+                        <th class="status-col">Status</th>
+                        <th class="date-col">Joined</th>
+                        <th class="stats-col">Stats</th>
+                        <th class="actions-col">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -84,25 +83,20 @@
                                 <div class="user-info">
                                     <div class="user-details">
                                         <div class="user-name">{{ $user->name }}</div>
-                                        <div class="user-id">#{{ $user->id }}</div>
+                                        <div class="user-meta">
+                                            <span class="user-id">#{{ $user->id }}</span>
+                                            <span class="user-email">{{ $user->email }}</span>
+                                            @if($user->email_verified_at)
+                                                <span class="verified-badge mini">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </span>
+                                            @else
+                                                <span class="unverified-badge mini">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                            
-                            <td class="email-cell">
-                                <div class="email-info">
-                                    <span class="email">{{ $user->email }}</span>
-                                    @if($user->email_verified_at)
-                                        <span class="verified-badge">
-                                            <i class="fas fa-check-circle"></i>
-                                            Verified
-                                        </span>
-                                    @else
-                                        <span class="unverified-badge">
-                                            <i class="fas fa-exclamation-triangle"></i>
-                                            Unverified
-                                        </span>
-                                    @endif
                                 </div>
                             </td>
                             
@@ -110,12 +104,12 @@
                                 @if($user->is_admin)
                                     <span class="role-badge admin-badge">
                                         <i class="fas fa-crown"></i>
-                                        Admin
+                                        ADMIN
                                     </span>
                                 @else
                                     <span class="role-badge user-badge">
                                         <i class="fas fa-user"></i>
-                                        User
+                                        USER
                                     </span>
                                 @endif
                             </td>
@@ -125,59 +119,58 @@
                                     @if($user->hasPermanentBan())
                                         <span class="status-badge banned-badge">
                                             <i class="fas fa-ban"></i>
-                                            Permanently Banned
+                                            BANNED
                                         </span>
                                     @else
                                         <span class="status-badge temp-banned-badge">
                                             <i class="fas fa-clock"></i>
-                                            Banned Until {{ $user->ban_expires_at->format('M j, Y') }}
+                                            UNTIL {{ $user->ban_expires_at->format('M j, Y') }}
                                         </span>
                                     @endif
                                     @if($user->ban_reason)
-                                        <div class="ban-reason" title="{{ $user->ban_reason }}">
-                                            {{ Str::limit($user->ban_reason, 50) }}
+                                        <div class="ban-reason-mini" title="{{ $user->ban_reason }}">
+                                            {{ Str::limit($user->ban_reason, 30) }}
                                         </div>
                                     @endif
                                 @else
                                     <span class="status-badge active-badge">
-                                        Active
+                                        <i class="fas fa-check"></i>
+                                        ACTIVE
                                     </span>
                                 @endif
                             </td>
                             
                             <td class="date-cell">
-                                <div class="date-info">
+                                <div class="date-info-compact">
                                     <div class="date">{{ $user->created_at->format('M j, Y') }}</div>
-                                    <div class="time">{{ $user->created_at->diffForHumans() }}</div>
+                                    <div class="time-ago">{{ $user->created_at->diffForHumans() }}</div>
                                 </div>
                             </td>
                             
                             <td class="stats-cell">
-                                <div class="user-stats">
-                                    <div class="stat-item">
+                                <div class="user-stats-compact">
+                                    <div class="stat-compact">
                                         <i class="fas fa-gamepad"></i>
-                                        <span>{{ $user->gameSessions->count() }} games</span>
+                                        {{ $user->gameSessions->count() }}
                                     </div>
                                     @if($user->gameSessions->count() > 0)
-                                        <div class="stat-item">
+                                        <div class="stat-compact">
                                             <i class="fas fa-trophy"></i>
-                                            <span>{{ number_format($user->average_accuracy, 1) }}% avg</span>
+                                            {{ number_format($user->average_accuracy, 1) }}%
                                         </div>
                                     @endif
                                 </div>
                             </td>
                             
                             <td class="actions-cell">
-                                <div class="action-buttons">
+                                <div class="action-buttons-compact">
                                     <!-- Email Verification Actions -->
                                     @if(!$user->email_verified_at)
                                         <form method="POST" action="{{ route('admin.users.send-verification', $user) }}" 
-                                              class="verification-form" 
-                                              style="display: inline-block;">
+                                              class="verification-form inline-form">
                                             @csrf
-                                            <button type="submit" class="btn btn-info btn-sm" title="Send Verification Email">
+                                            <button type="submit" class="btn-icon btn-info" title="Send Verification Email">
                                                 <i class="fas fa-envelope"></i>
-                                                Send Verification
                                             </button>
                                         </form>
                                     @endif
@@ -185,18 +178,16 @@
                                     <!-- Admin Toggle Actions -->
                                     @if($user->id !== Auth::id())
                                         <form method="POST" action="{{ route('admin.users.toggle-admin', $user) }}" 
-                                              class="toggle-form" 
+                                              class="toggle-form inline-form" 
                                               onsubmit="return confirmToggle('{{ $user->name }}', {{ $user->is_admin ? 'true' : 'false' }})">
                                             @csrf
                                             @if($user->is_admin)
-                                                <button type="submit" class="btn btn-danger btn-sm" title="Remove Admin">
+                                                <button type="submit" class="btn-icon btn-danger" title="Remove Admin">
                                                     <i class="fas fa-user-minus"></i>
-                                                    Remove Admin
                                                 </button>
                                             @else
-                                                <button type="submit" class="btn btn-success btn-sm" title="Make Admin">
+                                                <button type="submit" class="btn-icon btn-success" title="Make Admin">
                                                     <i class="fas fa-user-plus"></i>
-                                                    Make Admin
                                                 </button>
                                             @endif
                                         </form>
@@ -206,20 +197,18 @@
                                     @if($user->id !== Auth::id() && !$user->is_admin)
                                         @if($user->isBanned())
                                             <form method="POST" action="{{ route('admin.users.unban', $user) }}" 
-                                                  class="unban-form" 
+                                                  class="unban-form inline-form" 
                                                   onsubmit="return confirm('Are you sure you want to unban {{ $user->name }}?')">
                                                 @csrf
-                                                <button type="submit" class="btn btn-warning btn-sm" title="Unban User">
+                                                <button type="submit" class="btn-icon btn-warning" title="Unban User">
                                                     <i class="fas fa-unlock"></i>
-                                                    Unban
                                                 </button>
                                             </form>
                                         @else
                                             <a href="{{ route('admin.users.ban-form', $user) }}" 
-                                               class="btn btn-outline btn-sm" 
+                                               class="btn-icon btn-outline" 
                                                title="Ban User">
                                                 <i class="fas fa-ban"></i>
-                                                Ban
                                             </a>
                                         @endif
                                     @endif
