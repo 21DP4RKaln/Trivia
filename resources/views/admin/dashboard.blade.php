@@ -90,6 +90,204 @@
     </div>
 </div>
 
+<!-- Mobile-Specific Widgets (only visible on mobile) -->
+<div class="mobile-dashboard-widgets" style="display: none;">
+    <!-- Mobile Stats Row -->
+    <div class="mobile-stats-row">
+        <div class="mobile-stat-item" style="--stat-color: linear-gradient(90deg, #10b981, #3b82f6);">
+            <div class="mobile-stat-number">{{ number_format($totalUsers) }}</div>
+            <div class="mobile-stat-label">Users</div>
+            <div class="mobile-stat-change {{ $userGrowthPercentage >= 0 ? 'positive' : 'negative' }}">
+                <i class="fas fa-arrow-{{ $userGrowthPercentage >= 0 ? 'up' : 'down' }}"></i>
+                {{ $userGrowthPercentage >= 0 ? '+' : '' }}{{ $userGrowthPercentage }}%
+            </div>
+        </div>
+        
+        <div class="mobile-stat-item" style="--stat-color: linear-gradient(90deg, #3b82f6, #8b5cf6);">
+            <div class="mobile-stat-number">{{ number_format($totalGames) }}</div>
+            <div class="mobile-stat-label">Games</div>
+            <div class="mobile-stat-change {{ $gameGrowthPercentage >= 0 ? 'positive' : 'negative' }}">
+                <i class="fas fa-arrow-{{ $gameGrowthPercentage >= 0 ? 'up' : 'down' }}"></i>
+                {{ $gameGrowthPercentage >= 0 ? '+' : '' }}{{ $gameGrowthPercentage }}%
+            </div>
+        </div>
+        
+        <div class="mobile-stat-item" style="--stat-color: linear-gradient(90deg, #8b5cf6, #ef4444);">
+            <div class="mobile-stat-number">{{ $gamesToday->count() }}</div>
+            <div class="mobile-stat-label">Today</div>
+            <div class="mobile-stat-change {{ $todayGrowthPercentage >= 0 ? 'positive' : 'negative' }}">
+                <i class="fas fa-arrow-{{ $todayGrowthPercentage >= 0 ? 'up' : 'down' }}"></i>
+                {{ $todayGrowthPercentage >= 0 ? '+' : '' }}{{ $todayGrowthPercentage }}%
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Quick Actions -->
+    <div class="mobile-admin-widget">
+        <div class="mobile-quick-actions">
+            <a href="{{ route('admin.users') }}" class="mobile-action-card">
+                <div class="mobile-action-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="mobile-action-title">Users</div>
+                <div class="mobile-action-subtitle">{{ $totalUsers }} total</div>
+            </a>
+            
+            <a href="{{ route('admin.statistics') }}" class="mobile-action-card">
+                <div class="mobile-action-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="mobile-action-title">Stats</div>
+                <div class="mobile-action-subtitle">View analytics</div>
+            </a>
+            
+            <a href="{{ route('admin.questions') }}" class="mobile-action-card">
+                <div class="mobile-action-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <div class="mobile-action-title">Questions</div>
+                <div class="mobile-action-subtitle">Manage quiz</div>
+            </a>
+            
+            <a href="{{ route('trivia.index') }}" class="mobile-action-card">
+                <div class="mobile-action-icon">
+                    <i class="fas fa-play"></i>
+                </div>
+                <div class="mobile-action-title">Play</div>
+                <div class="mobile-action-subtitle">Test game</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Mobile Recent Activity -->
+    <div class="mobile-admin-widget">
+        <div class="mobile-recent-activity">
+            <div class="mobile-activity-header">
+                <div class="mobile-activity-title">
+                    <i class="fas fa-clock"></i>
+                    Recent Activity
+                </div>
+                <a href="{{ route('admin.statistics') }}" class="mobile-activity-view-all">View All</a>
+            </div>
+            
+            <div class="mobile-activity-list">
+                @forelse($recentGames->take(3) as $game)
+                    <div class="mobile-activity-item game-activity">
+                        <div class="mobile-activity-avatar">
+                            {{ substr($game->user->name ?? 'G', 0, 1) }}
+                        </div>
+                        <div class="mobile-activity-content">
+                            <div class="mobile-activity-text">
+                                <strong>{{ $game->user->name ?? 'Guest' }}</strong> completed a game
+                                with {{ $game->correct_answers }}/{{ $game->total_questions }} correct
+                            </div>
+                            <div class="mobile-activity-time">{{ $game->updated_at->diffForHumans() }}</div>
+                        </div>
+                        <div class="mobile-activity-badge {{ $game->accuracy >= 80 ? 'high-score' : 'new-user' }}">
+                            {{ number_format($game->accuracy, 0) }}%
+                        </div>
+                    </div>
+                @empty
+                    <div class="mobile-activity-item">
+                        <div class="mobile-activity-avatar">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <div class="mobile-activity-content">
+                            <div class="mobile-activity-text">No recent games</div>
+                            <div class="mobile-activity-time">Start playing to see activity</div>
+                        </div>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile System Status -->
+    <div class="mobile-admin-widget">
+        <div class="mobile-system-status">
+            <div class="mobile-status-header">
+                <i class="fas fa-server"></i>
+                System Status
+            </div>
+            
+            <div class="mobile-status-grid">
+                <div class="mobile-status-item">
+                    <div class="mobile-status-indicator online"></div>
+                    <div class="mobile-status-label">API</div>
+                    <div class="mobile-status-value">Online</div>
+                </div>
+                
+                <div class="mobile-status-item">
+                    <div class="mobile-status-indicator online"></div>
+                    <div class="mobile-status-label">Database</div>
+                    <div class="mobile-status-value">Connected</div>
+                </div>
+                
+                <div class="mobile-status-item">
+                    <div class="mobile-status-indicator online"></div>
+                    <div class="mobile-status-label">Cache</div>
+                    <div class="mobile-status-value">Active</div>
+                </div>
+                
+                <div class="mobile-status-item">
+                    <div class="mobile-status-indicator online"></div>
+                    <div class="mobile-status-label">Queue</div>
+                    <div class="mobile-status-value">Running</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Chart Widget -->
+    <div class="mobile-admin-widget">
+        <div class="mobile-chart-container">
+            <div class="mobile-chart-header">
+                <div class="mobile-chart-title">
+                    <i class="fas fa-chart-line"></i>
+                    Games Overview
+                </div>
+                <div class="mobile-chart-period">Last 7 days</div>
+            </div>
+            
+            <div class="mobile-mini-chart"></div>
+            
+            <div class="mobile-chart-stats">
+                <div class="mobile-chart-stat">
+                    <div class="mobile-chart-stat-value">{{ number_format($recentGames->avg('accuracy'), 1) }}%</div>
+                    <div class="mobile-chart-stat-label">Avg Score</div>
+                </div>
+                <div class="mobile-chart-stat">
+                    <div class="mobile-chart-stat-value">{{ gmdate('i:s', $recentGames->avg('duration_seconds') ?? 0) }}</div>
+                    <div class="mobile-chart-stat-label">Avg Time</div>
+                </div>
+                <div class="mobile-chart-stat">
+                    <div class="mobile-chart-stat-value">{{ $recentGames->count() }}</div>
+                    <div class="mobile-chart-stat-label">Total Games</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media (max-width: 768px) {
+    .stats-grid,
+    .dashboard-grid {
+        display: none !important;
+    }
+    
+    .mobile-dashboard-widgets {
+        display: block !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-dashboard-widgets {
+        display: none !important;
+    }
+}
+</style>
+
 <!-- Main Dashboard Content -->
 <div class="dashboard-grid">
     <!-- Recent Games Activity -->

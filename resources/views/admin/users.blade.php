@@ -79,7 +79,7 @@
                 <tbody>
                     @foreach($users as $user)
                         <tr class="user-row {{ $user->is_admin ? 'admin-user' : '' }} {{ $user->isBanned() ? 'banned-user' : '' }}">
-                            <td class="user-cell">
+                            <td class="user-cell" data-label="User">
                                 <div class="user-info">
                                     <div class="user-details">
                                         <div class="user-name">{{ $user->name }}</div>
@@ -100,7 +100,7 @@
                                 </div>
                             </td>
                             
-                            <td class="role-cell">
+                            <td class="role-cell" data-label="Role">
                                 @if($user->is_admin)
                                     <span class="role-badge admin-badge">
                                         <i class="fas fa-crown"></i>
@@ -114,7 +114,7 @@
                                 @endif
                             </td>
                             
-                            <td class="status-cell">
+                            <td class="status-cell" data-label="Status">
                                 @if($user->isBanned())
                                     @if($user->hasPermanentBan())
                                         <span class="status-badge banned-badge">
@@ -140,14 +140,14 @@
                                 @endif
                             </td>
                             
-                            <td class="date-cell">
+                            <td class="date-cell" data-label="Joined">
                                 <div class="date-info-compact">
                                     <div class="date">{{ $user->created_at->format('M j, Y') }}</div>
                                     <div class="time-ago">{{ $user->created_at->diffForHumans() }}</div>
                                 </div>
                             </td>
                             
-                            <td class="stats-cell">
+                            <td class="stats-cell" data-label="Stats">
                                 <div class="user-stats-compact">
                                     <div class="stat-compact">
                                         <i class="fas fa-gamepad"></i>
@@ -162,7 +162,7 @@
                                 </div>
                             </td>
                             
-                            <td class="actions-cell">
+                            <td class="actions-cell" data-label="Actions">
                                 <div class="action-buttons-compact">
                                     <!-- Email Verification Actions -->
                                     @if(!$user->email_verified_at)

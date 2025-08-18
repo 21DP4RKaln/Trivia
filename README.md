@@ -3,6 +3,7 @@
 ## Features
 
 ### Core Game Features
+
 - **Smart Question Generation**: Dynamic trivia questions across multiple categories
 - **Auto-Save Functionality**: Games automatically save after each question
 - **Cross-Session Persistence**: Continue games even after browser restarts
@@ -11,6 +12,7 @@
 - **24-Hour Game Expiry**: Automatic cleanup of expired saved games
 
 ### Admin Management
+
 - **User Management**: Complete user administration with role assignment
 - **Terms of Service Editor**: Advanced WYSIWYG editor with version control
 - **Analytics Dashboard**: Game statistics, user engagement metrics
@@ -116,7 +118,7 @@ Visit `http://localhost:8000` to access the application.
 
 2. **Access Admin Panel**: Login and click "Admin Panel" in navigation
 3. **Manage Users**: View all users, grant/revoke admin privileges, and monitor user activity
-4. **Terms of Service Management**: 
+4. **Terms of Service Management**:
    - Advanced WYSIWYG editor with real-time preview
    - Version control and history tracking
    - Contact information management
@@ -179,7 +181,7 @@ php artisan user:make-admin email@example.com
 ```sql
 -- Users table (enhanced)
 users (
-    id, name, email, password, is_admin, 
+    id, name, email, password, is_admin,
     email_verified_at, remember_token, timestamps
 )
 
@@ -256,7 +258,7 @@ MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_ENCRYPTION=tls
 
-# Outlook Example  
+# Outlook Example
 MAIL_HOST=smtp-mail.outlook.com
 
 # Custom SMTP

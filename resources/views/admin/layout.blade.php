@@ -2,14 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>@yield('title', 'Admin Panel') - Trivia Admin</title>
     <link rel="icon" href="{{ asset('image/logo.png') }}" type="image/png">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <meta name="theme-color" content="#10b981">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    @vite(['resources/scss/app.scss', 'resources/scss/admin/admin.scss', 'resources/scss/admin/admin-statistics.scss', 'resources/scss/admin/admin-questions.scss', 'resources/scss/admin/terms-of-service.scss', 'resources/css/admin/admin-users.css', 'resources/css/admin/admin-dashboard.css', 'resources/css/admin/admin-statistics.css', 'resources/css/admin/admin-questions.css', 'resources/css/admin/terms-of-service.css', 'resources/css/pagination.css', 'resources/css/mobile-responsive.css', 'resources/css/mobile-utilities.css', 'resources/js/app.js', 'resources/js/admin/admin-users.js', 'resources/js/admin/admin-dashboard.js', 'resources/js/admin/admin-questions.js', 'resources/js/admin/terms-of-service.js'])
+    <meta name="apple-mobile-web-app-title" content="Trivia Admin">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Trivia Admin">
+    <meta name="msapplication-TileColor" content="#10b981">
+    <meta name="msapplication-TileImage" content="{{ asset('image/logo.png') }}">
+    
+    <!-- iOS specific meta tags -->
+    <meta name="apple-touch-fullscreen" content="yes">
+    <link rel="apple-touch-icon" href="{{ asset('image/logo.png') }}">
+    <link rel="apple-touch-startup-image" href="{{ asset('image/logo.png') }}">
+    
+    <!-- Prevent zoom on inputs for iOS -->
+    <meta name="format-detection" content="telephone=no">
+    @vite(['resources/scss/app.scss', 'resources/scss/admin/admin.scss', 'resources/scss/admin/admin-statistics.scss', 'resources/scss/admin/admin-questions.scss', 'resources/scss/admin/terms-of-service.scss', 'resources/css/admin/admin-users.css', 'resources/css/admin/admin-dashboard.css', 'resources/css/admin/admin-statistics.css', 'resources/css/admin/admin-questions.css', 'resources/css/admin/terms-of-service.css', 'resources/css/admin/admin-mobile.css', 'resources/css/admin/admin-mobile-widgets.css', 'resources/css/admin/admin-mobile-touch.css', 'resources/css/pagination.css', 'resources/css/mobile-responsive.css', 'resources/css/mobile-utilities.css', 'resources/js/app.js', 'resources/js/admin/admin-users.js', 'resources/js/admin/admin-dashboard.js', 'resources/js/admin/admin-questions.js', 'resources/js/admin/terms-of-service.js', 'resources/js/admin/admin-mobile.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/loader.css') }}">
     @stack('styles')
@@ -109,6 +122,17 @@
     <!-- Scroll Progress Indicator -->
     <div class="scroll-indicator" id="scrollIndicator">
         <div class="scroll-progress" id="scrollProgress"></div>
+    </div>
+
+    <!-- Mobile-specific elements -->
+    <div class="mobile-connection-indicator" id="connectionStatus" style="display: none;">
+        <i class="fas fa-wifi"></i>
+        <span id="connectionText">Connected</span>
+    </div>
+    
+    <div class="mobile-refresh-indicator" id="refreshIndicator">
+        <i class="fas fa-sync-alt"></i>
+        <span>Pull to refresh</span>
     </div>
 
     <!-- Navigation -->
@@ -239,6 +263,7 @@
         function toggleMobileNav() {
             const navLinks = document.getElementById('mobile-nav-links');
             const toggleButton = document.querySelector('.mobile-nav-toggle');
+            const body = document.body;
             
             if (navLinks && toggleButton) {
                 const isOpen = navLinks.classList.contains('mobile-nav-open');
@@ -246,11 +271,13 @@
                 if (isOpen) {
                     navLinks.classList.remove('mobile-nav-open');
                     toggleButton.classList.remove('active');
-                    document.body.classList.remove('mobile-nav-open');
+                    body.classList.remove('mobile-nav-open');
+                    toggleButton.innerHTML = '<i class="fas fa-bars"></i>';
                 } else {
                     navLinks.classList.add('mobile-nav-open');
                     toggleButton.classList.add('active');
-                    document.body.classList.add('mobile-nav-open');
+                    body.classList.add('mobile-nav-open');
+                    toggleButton.innerHTML = '<i class="fas fa-times"></i>';
                 }
             }
         }
@@ -298,7 +325,75 @@
                     }
                 });
             }
+
+            // Mobile-specific initialization
+            if (window.innerWidth <= 768) {
+                initializeMobileNetworkMonitoring();
+                initializeMobileTableScrollIndicators();
+            }
         });
+        
+        // Network monitoring for mobile
+        function initializeMobileNetworkMonitoring() {
+            const connectionStatus = document.getElementById('connectionStatus');
+            const connectionText = document.getElementById('connectionText');
+            
+            if (!connectionStatus || !connectionText) return;
+            
+            function updateConnectionStatus() {
+                if (navigator.onLine) {
+                    connectionStatus.className = 'connection-status online';
+                    connectionText.textContent = 'Connected';
+                    setTimeout(() => {
+                        connectionStatus.classList.remove('visible');
+                    }, 2000);
+                } else {
+                    connectionStatus.className = 'connection-status visible';
+                    connectionText.textContent = 'Offline';
+                }
+            }
+            
+            // Initial check
+            updateConnectionStatus();
+            
+            // Listen for connection changes
+            window.addEventListener('online', updateConnectionStatus);
+            window.addEventListener('offline', updateConnectionStatus);
+        }
+        
+        // Table scroll indicators for mobile
+        function initializeMobileTableScrollIndicators() {
+            const tableWrappers = document.querySelectorAll('.table-wrapper');
+            
+            tableWrappers.forEach(wrapper => {
+                const table = wrapper.querySelector('table');
+                if (!table) return;
+                
+                function updateScrollIndicators() {
+                    const scrollLeft = wrapper.scrollLeft;
+                    const scrollWidth = wrapper.scrollWidth;
+                    const clientWidth = wrapper.clientWidth;
+                    const maxScrollLeft = scrollWidth - clientWidth;
+                    
+                    // Left indicator
+                    if (scrollLeft > 10) {
+                        wrapper.classList.add('scrolled-left');
+                    } else {
+                        wrapper.classList.remove('scrolled-left');
+                    }
+                    
+                    // Right indicator  
+                    if (scrollLeft < maxScrollLeft - 10) {
+                        wrapper.classList.add('scrolled-right');
+                    } else {
+                        wrapper.classList.remove('scrolled-right');
+                    }
+                }
+                
+                wrapper.addEventListener('scroll', updateScrollIndicators, { passive: true });
+                updateScrollIndicators(); // Initial check
+            });
+        }
     </script>
 
     <!-- Global Loader Overlay for Admin -->
